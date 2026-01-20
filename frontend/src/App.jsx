@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
 
@@ -12,15 +12,18 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
-        {/* Public Routes (เข้าได้ทุกคน) */}
+        {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected Routes (ต้อง Login เท่านั้น) */}
+        {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Home />} />
           <Route path="/game" element={<Game />} />
         </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
     </AuthProvider>
   );

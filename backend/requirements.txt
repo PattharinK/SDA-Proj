@@ -11,3 +11,4 @@ python-multipart            # รับข้อมูลจาก Form Login
 redis>=5.0.0                # ต่อ Redis Cache
 httpx                       # ไว้ทำ Test API
 pytest                      # ไว้รัน Test
+bcrypt==4.0.1
