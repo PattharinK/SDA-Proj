@@ -29,7 +29,7 @@ function Login() {
             <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
                 <h2 className="text-2xl font-bold text-center">Login</h2>
 
-                {error && <div className="bg-red-100 text-red-700 p-3 rounded">{error}</div>}
+                {error && <div class="bg-red-100 text-red-700 p-3 rounded">{error}</div>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <input
