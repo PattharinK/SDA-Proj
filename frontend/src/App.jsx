@@ -1,14 +1,32 @@
-import { useState } from 'react'
-import './App.css'
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './routes/ProtectedRoute';
+
+// Pages
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Home from './pages/Home';
+import Game from './pages/Game';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <h1 class="text-5xl font-bold">
-      Hello world!
-    </h1>
-  )
+    <AuthProvider>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/game" element={<Game />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+
+      </Routes>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
