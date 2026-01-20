@@ -1,0 +1,13 @@
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0   # [standard] คือตัวที่ลง Cython เร็วขึ้น 3 เท่า
+gunicorn>=21.2.0            # Process Manager สำหรับ Production
+sqlalchemy>=2.0.0           # ORM จัดการ Database
+aiomysql>=0.2.0             # <--- พระเอกคนใหม่ Driver MySQL แบบ Async
+cryptography                # <--- ตัวช่วยเรื่อง Security ของ MySQL 8
+pydantic-settings>=2.0.0    # จัดการ .env config
+python-jose[cryptography]   # ทำ JWT Token
+passlib[bcrypt]             # เข้ารหัส Password
+python-multipart            # รับข้อมูลจาก Form Login
+redis>=5.0.0                # ต่อ Redis Cache
+httpx                       # ไว้ทำ Test API
+pytest                      # ไว้รัน Test
