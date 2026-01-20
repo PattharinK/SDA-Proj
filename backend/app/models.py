@@ -15,7 +15,6 @@ from app.database import Base
 class User(Base):
     __tablename__ = "users"
 
-    # ใช้ BigInteger ให้ตรงกับ BIGINT UNSIGNED ใน MySQL
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     username = Column(String(50), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
@@ -29,7 +28,7 @@ class Game(Base):
     title = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     thumbnail_url = Column(String(255), nullable=True)
-    player_count = Column(Integer, default=0)  # ใน SQL เป็น INT UNSIGNED
+    player_count = Column(Integer, default=0)
     created_at = Column(DateTime, server_default=func.now())
 
 

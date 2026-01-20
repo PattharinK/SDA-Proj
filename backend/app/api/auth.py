@@ -24,7 +24,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     # สร้าง User ใหม่
     user = User(
         username=user_data.username,
-        password=get_password_hash(user_data.password),  # Hash ตรงนี้เลย
+        password=get_password_hash(user_data.password),  # Hash
     )
     db.add(user)
     await db.commit()
@@ -38,7 +38,7 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.username == body.username))
     user = result.scalar_one_or_none()
 
-    # 2. เช็ค Password (เอา Logic มาแปะตรงนี้เลย ไม่ต้องสร้าง func แยก)
+    # 2. เช็ค Password
     if not user or not verify_password(body.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 

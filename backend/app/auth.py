@@ -13,7 +13,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 
-# เหลือแค่ฟังก์ชันพื้นฐานจริงๆ
 def verify_password(plain, hashed):
     return pwd_context.verify(plain, hashed)
 
@@ -34,7 +33,7 @@ async def get_current_user(
     db: AsyncSession = Depends(get_db),
 ) -> User:
     try:
-        # แกะ Token ตรงนี้เลย ไม่ต้องมี verify_token แยก
+        # แกะ Token
         token = credentials.credentials
         payload = jwt.decode(
             token, settings.secret_key, algorithms=[settings.algorithm]
