@@ -1,50 +1,51 @@
 (function () {
     const API_BASE = "http://localhost:8000";
 
-    function getToken() {
-        return localStorage.getItem("token");
-    }
+    let GAME_ID = null;
+    let AUTH_TOKEN = null;
+
+    window.addEventListener("message", (event) => {
+        if (event.data?.type === "INIT_GAME") {
+            GAME_ID = event.data.gameId;
+            AUTH_TOKEN = event.data.token;
+
+            console.log("Game initialized", GAME_ID);
+        }
+    });
 
     window.GameSDK = {
-        submitScore(gameId, score) {
-            const token = getToken();
-            if (!token) return;
+        submitScore(score) {
+            if (!GAME_ID || !AUTH_TOKEN) return;
 
             fetch(`${API_BASE}/api/scores/submit`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
+                    "Authorization": `Bearer ${AUTH_TOKEN}`,
                 },
                 body: JSON.stringify({
-                    game_id: gameId,
-                    score: score,
+                    game_id: GAME_ID,
+                    score,
                 }),
             }).catch(console.error);
         },
 
-        // load best score
-        async loadBestScore(gameId) {
-            const token = getToken();
-            if (!token) {
-                console.warn("GameSDK: no token, return 0");
-                return 0;
-            }
+        async loadBestScore() {
+            if (!GAME_ID || !AUTH_TOKEN) return 0;
 
             try {
                 const res = await fetch(
-                    `${API_BASE}/api/scores/me/${gameId}`,
+                    `${API_BASE}/api/scores/me/${GAME_ID}`,
                     {
                         headers: {
-                            "Authorization": `Bearer ${token}`,
+                            "Authorization": `Bearer ${AUTH_TOKEN}`,
                         },
                     }
                 );
                 if (!res.ok) return 0;
                 const data = await res.json();
                 return data.best_score ?? 0;
-            } catch (err) {
-                console.error("loadBestScore failed", err);
+            } catch {
                 return 0;
             }
         },

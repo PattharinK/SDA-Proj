@@ -36,6 +36,7 @@ buzz.all().setVolume(volume);
 //loops
 var loopGameloop;
 var loopPipeloop;
+let sdkReady = false;
 
 $(document).ready(function () {
    if (window.location.search == "?debug")
@@ -43,11 +44,16 @@ $(document).ready(function () {
    if (window.location.search == "?easy")
       pipeheight = 200;
 
-   if (window.GameSDK && window.GAME_ID) {
-      GameSDK.loadBestScore(window.GAME_ID).then((score) => {
-         highscore = score;
-      });
-   }
+   window.addEventListener("message", (event) => {
+      if (event.data?.type === "INIT_GAME") {
+         sdkReady = true;
+
+         GameSDK.loadBestScore().then((score) => {
+            highscore = score;
+            setHighScore();
+         });
+      }
+   });
 
    //start with the splash screen
    showSplash();
@@ -342,7 +348,9 @@ function playerDead() {
 }
 
 function showScore() {
-   GameSDK.submitScore(window.GAME_ID, score); //save score to backend //unhide us
+   if (sdkReady) {
+      GameSDK.submitScore(score);
+   } //save score to backend //unhide us
    //unhide us
    $("#scoreboard").css("display", "block");
 

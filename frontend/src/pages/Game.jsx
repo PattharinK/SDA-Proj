@@ -66,9 +66,16 @@ function Game() {
                             src={`/games/${gameSlug}/index.html`}
                             title={game.title}
                             className="w-full"
-                            style={{
-                                height: "70vh",
-                                minHeight: "400px",
+                            style={{ height: "70vh" }}
+                            onLoad={(e) => {
+                                e.target.contentWindow.postMessage(
+                                    {
+                                        type: "INIT_GAME",
+                                        gameId: game.id,
+                                        token: localStorage.getItem("token"),
+                                    },
+                                    "*"
+                                );
                             }}
                         />
                     </div>
