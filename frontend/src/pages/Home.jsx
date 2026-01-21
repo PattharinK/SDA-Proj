@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ax from "../services/ax";
+import conf from "../services/conf";
 function Home() {
     const { logout, user } = useAuth();
     const [games, setGames] = useState([]);
@@ -10,7 +11,7 @@ function Home() {
     useEffect(() => {
         const loadGames = async () => {
             try {
-                const res = await ax.get("/games");
+                const res = await ax.get(conf.games);
                 setGames(res.data);
             } catch (err) {
                 console.error("Load games failed", err);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ax from "../services/ax";
+import conf from "../services/conf";
 
 export default function Leaderboard({ gameId }) {
     const [data, setData] = useState([]);
@@ -7,7 +8,7 @@ export default function Leaderboard({ gameId }) {
 
     useEffect(() => {
         setLoading(true);
-        ax.get(`/scores/leaderboard/${gameId}`)
+        ax.get(conf.leaderboard(gameId))
             .then(res => setData(res.data))
             .finally(() => setLoading(false));
     }, [gameId]);

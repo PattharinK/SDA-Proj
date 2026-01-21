@@ -1,9 +1,7 @@
 import conf from './conf';
 import axios from 'axios';
 
-const ax = axios.create({
-    baseURL: conf.api,
-});
+const ax = axios.create();
 
 // Request interceptor to add JWT token
 ax.interceptors.request.use((config) => {

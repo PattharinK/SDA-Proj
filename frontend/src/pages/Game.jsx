@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Leaderboard from "../components/Leaderboard";
 import ax from "../services/ax";
+import conf from "../services/conf";
 
 function Game() {
     const { gameSlug } = useParams();
@@ -13,7 +14,7 @@ function Game() {
     useEffect(() => {
         const loadGame = async () => {
             try {
-                const res = await ax.get(`/games/by-title/${gameSlug}`);
+                const res = await ax.get(conf.gameByTitle(gameSlug));
                 setGame(res.data);
             } catch (err) {
                 console.error("Game not found", err);
@@ -29,7 +30,7 @@ function Game() {
     useEffect(() => {
         if (!game) return;
 
-        ax.post(`/games/${game.id}/play`).catch((err) =>
+        ax.post(conf.playGame(game.id)).catch((err) =>
             console.error("Play game failed", err)
         );
     }, [game]);
