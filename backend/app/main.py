@@ -1,10 +1,9 @@
-import os
-from fastapi import APIRouter, FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.auth import router as auth_router
 from app.api.scores import router as scores_router
-
+from app.api.games import router as games_router
 
 app = FastAPI()
 
@@ -18,8 +17,13 @@ app.add_middleware(
 
 api_router = APIRouter(prefix="/api")
 
-app.include_router(auth_router, prefix="/auth", tags=["auth"])
-app.include_router(scores_router, prefix="/api")
+# รวมทุก router เข้า api_router
+api_router.include_router(auth_router, prefix="/auth")
+api_router.include_router(games_router)
+api_router.include_router(scores_router)
+
+# include api_router เข้า app
+app.include_router(api_router)
 
 
 @app.get("/")
@@ -31,5 +35,4 @@ async def root():
 async def health():
     import os, socket
 
-    print("Handled by:", socket.gethostname(), "PID:", os.getpid())
     return {"hostname": socket.gethostname(), "pid": os.getpid()}

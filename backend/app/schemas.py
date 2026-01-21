@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
+from pydantic import BaseModel
+from typing import Optional
 
 
 class UserBase(BaseModel):  # ข้อมูลพื้นฐานของ User
@@ -26,3 +28,19 @@ class LoginRequest(BaseModel):  # รับข้อมูลล็อกอิ�
 class TokenResponse(BaseModel):  # ส่ง Token
     access_token: str
     token_type: str = "bearer"
+
+
+class SubmitScoreRequest(BaseModel):
+    game_id: int
+    score: int
+
+
+class GameResponse(BaseModel):
+    id: int
+    title: str
+    description: Optional[str]
+    thumbnail_url: Optional[str]
+    player_count: int
+
+    class Config:
+        from_attributes = True

@@ -7,7 +7,7 @@ export default function Leaderboard({ gameId }) {
 
     useEffect(() => {
         setLoading(true);
-        ax.get(`/api/scores/leaderboard/${gameId}`)
+        ax.get(`/scores/leaderboard/${gameId}`)
             .then(res => setData(res.data))
             .finally(() => setLoading(false));
     }, [gameId]);

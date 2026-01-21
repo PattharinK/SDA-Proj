@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
@@ -6,14 +6,20 @@ from pydantic import BaseModel
 from app.database import get_db
 from app.auth import get_current_user
 from app.models import Game, GameSession, Leaderboard, User
+from app.schemas import SubmitScoreRequest
 
 router = APIRouter(prefix="/scores", tags=["scores"])
 
+MAX_SCORE = 500
 
-# Schemas
-class SubmitScoreRequest(BaseModel):
-    game_id: int
-    score: int
+
+# Helpers
+def validate_score(score: int):
+    if score < 0 or score > MAX_SCORE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid score",
+        )
 
 
 # Submit Score
@@ -23,15 +29,14 @@ async def submit_score(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    if body.score < 0 or body.score > 1000:
-        raise HTTPException(400, "Invalid score")
+    validate_score(body.score)
 
-    # 1️⃣ ตรวจ Game
-    game = await db.get(Game, body.game_id)
+    # ตรวจ Game
+    game: Game | None = await db.get(Game, body.game_id)
     if not game:
         raise HTTPException(404, "Game not found")
 
-    # 2️⃣ Game Session (นับผู้เล่นไม่ซ้ำ)
+    # ตรวจ session (user เล่นเกมนี้ครั้งแรก?)
     result = await db.execute(
         select(GameSession).where(
             GameSession.user_id == current_user.id,
@@ -49,16 +54,16 @@ async def submit_score(
         )
         game.player_count += 1
 
-    # 3️⃣ Leaderboard (best score)
+    # Leaderboard (เก็บ best score)
     result = await db.execute(
         select(Leaderboard).where(
             Leaderboard.user_id == current_user.id,
             Leaderboard.game_id == body.game_id,
         )
     )
-    lb = result.scalar_one_or_none()
+    leaderboard = result.scalar_one_or_none()
 
-    if not lb:
+    if not leaderboard:
         db.add(
             Leaderboard(
                 user_id=current_user.id,
@@ -66,14 +71,19 @@ async def submit_score(
                 best_score=body.score,
             )
         )
-    elif body.score > lb.best_score:
-        lb.best_score = body.score
+    elif body.score > leaderboard.best_score:
+        leaderboard.best_score = body.score
 
     await db.commit()
-    return {"message": "Score submitted"}
+
+    return {
+        "message": "Score submitted",
+        "best_score": max(
+            body.score, leaderboard.best_score if leaderboard else body.score
+        ),
+    }
 
 
-# Leaderboard
 @router.get("/leaderboard/{game_id}")
 async def leaderboard(game_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
