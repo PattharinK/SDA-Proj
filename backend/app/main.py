@@ -1,8 +1,7 @@
-from fastapi import FastAPI, HTTPException
+import os
+from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import settings
-from app.database import engine, Base
 from app.api.auth import router as auth_router
 
 
@@ -10,11 +9,13 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+api_router = APIRouter(prefix="/api")
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 
@@ -26,4 +27,7 @@ async def root():
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    import os, socket
+
+    print("Handled by:", socket.gethostname(), "PID:", os.getpid())
+    return {"hostname": socket.gethostname(), "pid": os.getpid()}
