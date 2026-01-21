@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Link } from "react-router-dom";
 
 function Home() {
     const { logout, user } = useAuth();
@@ -19,6 +20,12 @@ function Home() {
             <button onClick={handleLogout}>
                 Logout
             </button>
+
+            <br /> <br />
+
+            <Link to="/games/flappy">
+                Go to Sample Game
+            </Link>
         </div>
     );
 }

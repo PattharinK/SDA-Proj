@@ -19,7 +19,7 @@ function App() {
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Home />} />
-          <Route path="/game" element={<Game />} />
+          <Route path="/games/:gameSlug" element={<Game />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
