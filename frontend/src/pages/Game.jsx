@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import Leaderboard from "../components/Leaderboard";
 
 function Game() {
     const { gameSlug } = useParams();
@@ -48,24 +49,9 @@ function Game() {
                 </h2>
 
                 <div className="bg-gray-800 rounded-lg overflow-hidden">
-                    <table className="w-full text-left">
-                        <thead className="bg-gray-700">
-                            <tr>
-                                <th className="px-4 py-2">อันดับ</th>
-                                <th className="px-4 py-2">ผู้เล่น</th>
-                                <th className="px-4 py-2">คะแนน</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[1, 2, 3].map((rank) => (
-                                <tr key={rank} className="border-t border-gray-700">
-                                    <td className="px-4 py-2">{rank}</td>
-                                    <td className="px-4 py-2">Player {rank}</td>
-                                    <td className="px-4 py-2">{1000 - rank * 100}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <tbody>
+                        <Leaderboard gameId={1} />
+                    </tbody>
                 </div>
             </div>
         </div>

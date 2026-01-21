@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import api from '../services/api';
+import ax from '../services/ax';
 
 const AuthContext = createContext(null);
 
@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('token');
         if (token) {
             // แก้ URL เป็น /auth/me
-            api.get('/auth/me')
+            ax.get('/auth/me')
                 .then(({ data }) => setUser(data))
                 .catch(() => {
                     localStorage.removeItem('token');
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
         // 1. แก้ URL เป็น /auth/login
         // 2. ส่ง JSON ธรรมดา { username, password } ไม่ต้องใช้ URLSearchParams แล้ว
         // 3. ไม่ต้องกำหนด Header Content-Type เอง (Axios จัดการให้เป็น application/json อัตโนมัติ)
-        const response = await api.post('/auth/login', {
+        const response = await ax.post('/auth/login', {
             username,
             password
         });
@@ -36,20 +36,20 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', access_token);
 
         // แก้ URL เป็น /auth/me
-        const { data: userData } = await api.get('/auth/me');
+        const { data: userData } = await ax.get('/auth/me');
         setUser(userData);
     };
 
     const register = async (username, password) => {
         // แก้ URL เป็น /auth/register
-        const { data } = await api.post('/auth/register', { username, password });
+        const { data } = await ax.post('/auth/register', { username, password });
         return data;
     };
 
     const logout = () => {
         localStorage.removeItem('token');
         setUser(null);
-        api.post('/auth/logout');
+        ax.post('/auth/logout');
 
     };
 

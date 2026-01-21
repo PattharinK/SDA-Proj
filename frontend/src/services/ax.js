@@ -1,11 +1,12 @@
+import conf from './conf';
 import axios from 'axios';
 
-const api = axios.create({
-    baseURL: 'http://localhost:8000',
+const ax = axios.create({
+    baseURL: conf.api,
 });
 
 // Request interceptor to add JWT token
-api.interceptors.request.use((config) => {
+ax.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -14,7 +15,7 @@ api.interceptors.request.use((config) => {
 });
 
 // Response interceptor to handle token expiration
-api.interceptors.response.use(
+ax.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
@@ -25,4 +26,4 @@ api.interceptors.response.use(
     }
 );
 
-export default api;
+export default ax;
