@@ -3,6 +3,7 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.auth import router as auth_router
+from app.api.scores import router as scores_router
 
 
 app = FastAPI()
@@ -18,6 +19,7 @@ app.add_middleware(
 api_router = APIRouter(prefix="/api")
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
+app.include_router(scores_router, prefix="/api")
 
 
 @app.get("/")
