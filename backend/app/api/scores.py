@@ -10,7 +10,7 @@ from app.schemas import SubmitScoreRequest
 
 router = APIRouter(prefix="/scores", tags=["scores"])
 
-MAX_SCORE = 500
+MAX_SCORE = 10000
 
 
 # Helpers
