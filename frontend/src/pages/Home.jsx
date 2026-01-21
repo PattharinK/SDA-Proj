@@ -1,27 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import ax from "../services/ax";
-import conf from "../services/conf";
+import { useAuth, useGames } from '../services/useQuery';
+
 function Home() {
     const { logout, user } = useAuth();
-    const [games, setGames] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { games, loading, fetchGames } = useGames();
 
     useEffect(() => {
-        const loadGames = async () => {
-            try {
-                const res = await ax.get(conf.games);
-                setGames(res.data);
-            } catch (err) {
-                console.error("Load games failed", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadGames();
-    }, []);
+        fetchGames();
+    }, [fetchGames]);
 
     return (
         <div style={{ padding: 24, maxWidth: 900, margin: "0 auto" }}>

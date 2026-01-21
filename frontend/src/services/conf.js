@@ -1,9 +1,6 @@
 import api from "./ax";
 
-const API =
-    import.meta.env.MODE === 'development'
-        ? 'http://localhost:8000'
-        : 'https://production-url.com'; // เปลี่ยนเป็น URL จริงสำหรับ production
+const API = 'http://localhost:8000' // เปลี่ยนเป็น URL จริงสำหรับ production
 
 const conf = {
     urlApi: `${API}/api`,

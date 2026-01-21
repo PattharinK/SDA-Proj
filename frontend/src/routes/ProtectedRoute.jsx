@@ -1,8 +1,12 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../services/useQuery';
 
 const ProtectedRoute = () => {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     // ถ้าไม่มี User ให้ Redirect ไปหน้า Login
     if (!user) {

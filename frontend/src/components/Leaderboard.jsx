@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import ax from "../services/ax";
-import conf from "../services/conf";
+import { useScores } from '../services/useQuery';
+import ax from '../services/ax';
+import conf from '../services/conf';
 
 export default function Leaderboard({ gameId }) {
     const [data, setData] = useState([]);
@@ -43,9 +44,9 @@ export default function Leaderboard({ gameId }) {
     const rankLabel = (index) => `#${index + 1}`;
 
     const rankClass = (index) => {
-        if (index === 0) return "text-yellow-400 font-bold";
-        if (index === 1) return "text-gray-300 font-semibold";
-        if (index === 2) return "text-orange-400 font-semibold";
+        if (index === 0) return "text-yellow-500 font-bold";
+        if (index === 1) return "text-gray-600 font-semibold";
+        if (index === 2) return "text-orange-800 font-semibold";
         return "text-gray-400";
     };
 
@@ -64,7 +65,7 @@ export default function Leaderboard({ gameId }) {
                     {/* Username */}
                     <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                            <span className="font-medium text-gray-200 group-hover:text-white">
+                            <span className="font-medium text-black group-hover:text-white">
                                 {row.username}
                             </span>
                         </div>

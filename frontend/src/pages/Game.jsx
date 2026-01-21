@@ -1,39 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Leaderboard from "../components/Leaderboard";
-import ax from "../services/ax";
-import conf from "../services/conf";
+import { useAuth, useGames } from '../services/useQuery';
 
 function Game() {
     const { gameSlug } = useParams();
     const navigate = useNavigate();
-
-    const [game, setGame] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { game, loading, fetchGame, playGame } = useGames();
 
     useEffect(() => {
-        const loadGame = async () => {
-            try {
-                const res = await ax.get(conf.gameByTitle(gameSlug));
-                setGame(res.data);
-            } catch (err) {
-                console.error("Game not found", err);
-                navigate("/");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadGame();
-    }, [gameSlug, navigate]);
+        fetchGame(gameSlug).catch(() => navigate("/"));
+    }, [gameSlug, fetchGame, navigate]);
 
     useEffect(() => {
         if (!game) return;
-
-        ax.post(conf.playGame(game.id)).catch((err) =>
-            console.error("Play game failed", err)
-        );
-    }, [game]);
+        playGame(game.id);
+    }, [game, playGame]);
 
     if (loading) {
         return <p className="text-center mt-10">Loading...</p>;
