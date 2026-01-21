@@ -41,12 +41,12 @@ function Game() {
     if (!game) return null;
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
+        <div className="min-h-screen  text-black bg-gray-50-50">
             {/* ===== Header ===== */}
             <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-700">
                 <button
                     onClick={() => navigate(-1)}
-                    className="px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600 transition"
+                    className="px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-300 transition"
                 >
                     ← กลับ
                 </button>
@@ -65,7 +65,7 @@ function Game() {
                         <iframe
                             src={`/games/${gameSlug}/index.html`}
                             title={game.title}
-                            className="w-full"
+                            className="w-full h-full"
                             style={{ height: "70vh" }}
                             onLoad={(e) => {
                                 e.target.contentWindow.postMessage(
@@ -78,22 +78,23 @@ function Game() {
                                 );
                             }}
                         />
+
                     </div>
                 </div>
 
                 {/* ===== Game Info ===== */}
-                <div className="bg-gray-800 rounded-xl p-4 h-fit">
+                <div className="bg-gray-100 rounded-xl p-4 h-fit">
                     <h2 className="text-lg font-semibold mb-2">
                         รายละเอียดเกม
                     </h2>
 
-                    <p className="text-gray-300 leading-relaxed mb-4">
+                    <p className="text-black leading-relaxed mb-4">
                         {game.description || "ไม่มีคำอธิบาย"}
                     </p>
 
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-gray-800">
                         👥 Players:{" "}
-                        <span className="text-white font-medium">
+                        <span className="text-black font-medium">
                             {game.player_count}
                         </span>
                     </div>
@@ -106,7 +107,7 @@ function Game() {
                     Leaderboard
                 </h2>
 
-                <div className="bg-gray-800 rounded-lg p-4">
+                <div className="bg-gray-200 rounded-lg p-4">
                     <Leaderboard gameId={game.id} />
                 </div>
             </div>

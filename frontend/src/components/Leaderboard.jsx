@@ -16,7 +16,7 @@ export default function Leaderboard({ gameId }) {
         return (
             <tr>
                 <td colSpan={3} className="py-8 text-center text-gray-400">
-                    ⏳ กำลังโหลดคะแนน...
+                    กำลังโหลดคะแนน...
                 </td>
             </tr>
         );
