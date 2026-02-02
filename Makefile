@@ -44,7 +44,8 @@ help:
 
 up:
 	docker-compose -f docker-compose.dev.yml up -d
-	@echo "Services started! Open: http://localhost:5173"
+	@echo "Services started! Open: http://localhost:5173 (frontend) and http://localhost:8000/docs (API docs)"
+	@echo "Waiting for frontend/backend to be ready..."
 
 down:
 	docker-compose -f docker-compose.dev.yml down
