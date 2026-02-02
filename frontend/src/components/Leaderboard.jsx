@@ -8,28 +8,33 @@ export default function Leaderboard({ gameId }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // โหลดข้อมูลเริ่มต้น
         setLoading(true);
         ax.get(conf.leaderboard(gameId))
             .then(res => setData(res.data))
             .finally(() => setLoading(false));
 
-        // เชื่อม WebSocket สำหรับรับข่าวอัปเดตแบบ Real-time
-        const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/scores/ws/leaderboard/${gameId}`;
-        const ws = new WebSocket(wsUrl);
+        try {
+            const apiUrl = new URL(conf.urlApi);
+            const wsProtocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${wsProtocol}//${apiUrl.host}/api/scores/ws/leaderboard/${gameId}`;
+
+            console.log("Connecting to WS:", wsUrl);
+            var ws = new WebSocket(wsUrl);
+        } catch (e) {
+            console.error('Failed to construct WebSocket URL', e);
+            return () => { };
+        }
 
         ws.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            
+
             if (message.type === "initial") {
-                // ข้อมูลเริ่มต้นจาก WebSocket
                 setData(message.data);
             } else if (message.type === "update") {
-                // อัปเดตคะแนนใหม่
                 setData(prev => {
                     const updated = [...prev];
                     const index = updated.findIndex(p => p.user_id === message.data.user_id);
-                    
+
                     if (index !== -1) {
                         updated[index] = { ...updated[index], score: message.data.score };
                     } else {
@@ -39,8 +44,6 @@ export default function Leaderboard({ gameId }) {
                             user_id: message.data.user_id
                         });
                     }
-                    
-                    // เรียงลำดับใหม่
                     return updated.sort((a, b) => b.score - a.score).slice(0, 10);
                 });
             }

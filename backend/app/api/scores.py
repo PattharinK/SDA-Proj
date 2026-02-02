@@ -128,6 +128,7 @@ async def submit_score(
 async def leaderboard(game_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(
+            User.id.label("user_id"),
             User.username,
             Leaderboard.best_score,
         )
@@ -157,48 +158,49 @@ async def my_best_score(
     return {"best_score": lb.best_score if lb else 0}
 
 
-# WebSocket for Real-time Leaderboard
+# WebSocket for Real-time
 @router.websocket("/ws/leaderboard/{game_id}")
-async def websocket_leaderboard(websocket: WebSocket, game_id: int):
+async def websocket_leaderboard(
+    websocket: WebSocket,
+    game_id: int,
+    db: AsyncSession = Depends(get_db),
+):
     await websocket.accept()
     logger.info(f"🔌 WebSocket connected for game {game_id}")
     redis = await get_redis()
 
-    # Subscribe ไปยัง Redis channel นี้
+    # Subscribe ไปยัง Redis channel
     pubsub = redis.pubsub()
     channel = f"leaderboard:{game_id}"
     await pubsub.subscribe(channel)
     logger.info(f"📻 Subscribed to channel: {channel}")
 
     try:
-        # ส่งข้อมูลปัจจุบัน
-        async with get_db() as db:
-            result = await db.execute(
-                select(
-                    User.username,
-                    Leaderboard.best_score,
-                )
-                .join(User, User.id == Leaderboard.user_id)
-                .where(Leaderboard.game_id == game_id)
-                .order_by(Leaderboard.best_score.desc())
-                .limit(10)
+        result = await db.execute(
+            select(
+                User.id.label("user_id"),
+                User.username,
+                Leaderboard.best_score,
             )
-            current_data = [
-                {"username": row.username, "score": row.best_score}
-                for row in result.all()
-            ]
-            await websocket.send_json({"type": "initial", "data": current_data})
+            .join(User, User.id == Leaderboard.user_id)
+            .where(Leaderboard.game_id == game_id)
+            .order_by(Leaderboard.best_score.desc())
+            .limit(10)
+        )
+        current_data = [
+            {"username": row.username, "score": row.best_score} for row in result.all()
+        ]
+        await websocket.send_json({"type": "initial", "data": current_data})
 
         # รอฟังข่าวจาก Redis
         async for message in pubsub.listen():
             if message["type"] == "message":
                 score_data = json.loads(message["data"])
-                logger.info(f"📬 Received message on {channel}: {score_data}")
                 await websocket.send_json({"type": "update", "data": score_data})
-                logger.info(f"✅ Sent to WebSocket client: {score_data}")
+
     except WebSocketDisconnect:
         await pubsub.unsubscribe(channel)
-        logger.info(f"❌ WebSocket disconnected from {channel}")
+        logger.info(f" WebSocket disconnected from {channel}")
     except Exception as e:
-        logger.error(f"❌ WebSocket error on {channel}: {str(e)}")
+        logger.error(f" WebSocket error on {channel}: {str(e)}")
         await pubsub.unsubscribe(channel)
