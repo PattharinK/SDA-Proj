@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_db
@@ -10,6 +10,7 @@ from app.auth import (
     create_access_token,
     get_current_user,
 )
+from app.core.rate_limit import rate_limit
 
 router = APIRouter()
 
@@ -33,7 +34,19 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
+async def login(
+    body: LoginRequest,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    ip = request.client.host
+    key = f"rate:login:{body.username}:{ip}"
+
+    await rate_limit(
+        key=key,
+        limit=5,
+        window=300,
+    )
     # 1. หา User จาก DB
     result = await db.execute(select(User).where(User.username == body.username))
     user = result.scalar_one_or_none()

@@ -7,6 +7,7 @@ from app.models import Game
 from app.auth import get_current_user
 from app.models import Game, GameSession, User
 from app.schemas import GameResponse
+from app.core.rate_limit import rate_limit
 
 router = APIRouter(prefix="/games", tags=["games"])
 
@@ -43,12 +44,17 @@ async def play_game(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    # 1️⃣ ตรวจเกม
+    await rate_limit(
+        key=f"rate:play:{current_user.id}:{game_id}",
+        limit=10,
+        window=300,
+    )
+    # 1️ ตรวจเกม
     game = await db.get(Game, game_id)
     if not game:
         raise HTTPException(404, "Game not found")
 
-    # 2️⃣ ตรวจว่า user เคยเล่นเกมนี้ไหม
+    # 2️ ตรวจว่า user เคยเล่นเกมนี้ไหม
     result = await db.execute(
         select(GameSession).where(
             GameSession.user_id == current_user.id,
@@ -57,7 +63,7 @@ async def play_game(
     )
     session = result.scalar_one_or_none()
 
-    # 3️⃣ ถ้ายังไม่เคย → เพิ่ม session + เพิ่ม player_count
+    # 3️ ถ้ายังไม่เคย → เพิ่ม session + เพิ่ม player_count
     if not session:
         db.add(
             GameSession(

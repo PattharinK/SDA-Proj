@@ -6,31 +6,47 @@
 
 ## สารบัญ
 
-1. ภาพรวมโครงการ
-2. สิ่งที่ต้องมี
-3. การตั้งค่าเบื้องต้น
-4. การรันระบบ (Development Mode)
-5. การเพิ่มข้อมูลเกมลงฐานข้อมูล
-6. วิธีเพิ่มเกมใหม่
-7. โครงสร้างโครงการ
-8. API Endpoints
-9. ระบบ Real-time Leaderboard
-10. Troubleshooting
-11. วิธีใช้งาน (มุมมองผู้ใช้)
-12. เอกสารอ้างอิงเพิ่มเติม
-13. Quick Start
+1. [ภาพรวมโครงการ](#ภาพรวมโครงการ)
+2. [Feature หลัก](#feature-หลัก)
+3. [สถาปัตยกรรมระบบ](#สถาปัตยกรรมระบบ)
+4. [สิ่งที่ต้องมี](#สิ่งที่ต้องมี)
+5. [การตั้งค่าเบื้องต้น](#การตั้งค่าเบื้องต้น)
+6. [การรันระบบ (Development Mode)](#การรันระบบ-development-mode)
+7. [การเพิ่มข้อมูลเกม (Seed Database)](#การเพิ่มข้อมูลเกม-seed-database)
+8. [วิธีเพิ่มเกมใหม่](#วิธีเพิ่มเกมใหม่)
+9. [โครงสร้างโครงการ](#โครงสร้างโครงการ)
+10. [API Endpoints](#api-endpoints)
+11. [ระบบ Real-time Leaderboard](#ระบบ-real-time-leaderboard)
+12. [Makefile (คำสั่งลัด)](#makefile-คำสั่งลัด)
+13. [Troubleshooting](#troubleshooting)
+14. [Quick Start](#quick-start)
+15. [เอกสารอ้างอิงเพิ่มเติม](#เอกสารอ้างอิงเพิ่มเติม)
 
 ---
 
-## 1. ภาพรวมโครงการ
+## ภาพรวมโครงการ
 
 ### วัตถุประสงค์
 
-- ให้ผู้เล่นสามารถเล่นเกมผ่านเว็บได้
+- ให้ผู้เล่นสามารถเล่นเกมผ่าน Web Browser
 - บันทึกคะแนนของผู้เล่นลงฐานข้อมูล
 - แสดง Leaderboard ที่อัปเดตแบบ Real-time โดยไม่ต้องรีเฟรชหน้าเว็บ
+- รองรับหลายเกม และเพิ่มเกมใหม่ได้ง่าย
 
-### สถาปัตยกรรมระบบ
+---
+
+## Feature หลัก
+
+- Authentication (Register / Login / JWT)
+- รองรับหลายเกม (เช่น 2048, Flappy Bird, Snake)
+- Leaderboard แบบ Real-time ผ่าน WebSocket
+- Redis Pub/Sub สำหรับกระจาย Event คะแนน
+- รันระบบด้วย Docker Compose
+- พร้อมสำหรับ Load Test (k6)
+
+---
+
+## สถาปัตยกรรมระบบ
 
 ```
 Frontend (React + Vite)
@@ -41,43 +57,36 @@ MySQL Database
     ↓
 Redis (Pub/Sub)
     ↓
-Frontend (Real-time Update)
+Frontend (Real-time Leaderboard Update)
 ```
 
-### Feature หลัก
-
-- ระบบ Authentication (Login / Register)
-- รองรับหลายเกม (เช่น 2048, Flappy Bird)
-- Leaderboard แบบ Real-time ผ่าน WebSocket
-- Redis Pub/Sub สำหรับ Leaderboard
-- การรันผ่าน Docker Compose
-
 ---
 
-## 2. สิ่งที่ต้องมี
+## สิ่งที่ต้องมี
 
-### Software ที่จำเป็น
+### Software Requirements
 
-- Docker และ Docker Compose
+- Docker
+- Docker Compose
 - Git
-- Terminal หรือ Command Line
+- Terminal / Command Line
 
-### พื้นที่จัดเก็บข้อมูล
+### Storage
 
-- ต้องการพื้นที่ประมาณ 3–5 GB สำหรับ Docker images
+- พื้นที่อย่างน้อย **3–5 GB** สำหรับ Docker images และ volumes
 
 ---
 
-## 3. การตั้งค่าเบื้องต้น
+## การตั้งค่าเบื้องต้น
 
-### Step 1: Clone Repository
+### 1️Clone Repository
 
 ```bash
 git clone <repository-url>
 cd SDA-Proj
 ```
 
-### Step 2: สร้างไฟล์ .env
+### 2️สร้างไฟล์ `.env`
 
 สร้างไฟล์ `.env` ที่ root ของโปรเจกต์
 
@@ -93,9 +102,9 @@ SECRET_KEY=change-this-secret-key
 VITE_API_URL=http://localhost:8000
 ```
 
-หมายเหตุ: ใน Production ควรตั้งค่า `SECRET_KEY` ใหม่
+> **Production:** ต้องเปลี่ยน `SECRET_KEY` ให้ปลอดภัยเสมอ
 
-### Step 3: ตรวจสอบ Docker
+### 3 ตรวจสอบ Docker
 
 ```bash
 docker --version
@@ -104,21 +113,22 @@ docker-compose --version
 
 ---
 
-## 4. การรันระบบ (Development Mode)
+## การรันระบบ (Development Mode)
 
-### รันทั้งระบบ
+### ▶รันทั้งระบบ
 
 ```bash
 docker-compose -f docker-compose.dev.yml up
 ```
 
-Service ที่เปิดใช้งาน:
+### Service URLs
 
 - Frontend: [http://localhost:5173](http://localhost:5173)
 - Backend API: [http://localhost:8000/api](http://localhost:8000/api)
+- API Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
 - MySQL: localhost:3307
 
-ตรวจสอบ container:
+ตรวจสอบ container ที่กำลังรัน:
 
 ```bash
 docker ps
@@ -126,7 +136,7 @@ docker ps
 
 ---
 
-## 5. การเพิ่มข้อมูลเกมลงฐานข้อมูล
+## การเพิ่มข้อมูลเกม (Seed Database)
 
 ### แก้ไขไฟล์ Seed
 
@@ -147,7 +157,7 @@ GAMES = [
 ]
 ```
 
-ชื่อ `title` ต้องตรงกับชื่อโฟลเดอร์ใน `frontend/public/games/`
+> ℹค่า `title` ต้องตรงกับชื่อโฟลเดอร์ใน `frontend/public/games/`
 
 ### รัน Seed
 
@@ -157,15 +167,15 @@ docker-compose -f docker-compose.dev.yml run --rm backend python -m app.seed
 
 ---
 
-## 6. วิธีเพิ่มเกมใหม่
+## วิธีเพิ่มเกมใหม่
 
-### Step 1: เพิ่มโฟลเดอร์เกมใน Frontend
+### Step 1: เพิ่มโฟลเดอร์เกม
 
 ```
 frontend/public/games/snake/
 ```
 
-### Step 2: เพิ่มข้อมูลใน games_seed.py
+### Step 2: เพิ่มข้อมูลเกมใน Seed
 
 ```python
 {
@@ -177,7 +187,7 @@ frontend/public/games/snake/
 
 ### Step 3: เชื่อม GameSDK
 
-ในไฟล์ HTML
+ในไฟล์ HTML ของเกม
 
 ```html
 <script src="/games/game-sdk.js"></script>
@@ -197,7 +207,7 @@ docker-compose -f docker-compose.dev.yml run --rm backend python -m app.seed
 
 ---
 
-## 7. โครงสร้างโครงการ
+## โครงสร้างโครงการ
 
 ```
 SDA-Proj/
@@ -213,11 +223,11 @@ SDA-Proj/
 
 ---
 
-## 8. API Endpoints
+## API Endpoints
 
 ### Authentication
 
-```http
+```
 POST /api/auth/register
 POST /api/auth/login
 GET  /api/auth/me
@@ -225,7 +235,7 @@ GET  /api/auth/me
 
 ### Games
 
-```http
+```
 GET /api/games
 GET /api/games/{game_id}
 GET /api/games/by-title/{title}
@@ -234,7 +244,7 @@ POST /api/games/{game_id}/play
 
 ### Scores & Leaderboard
 
-```http
+```
 POST /api/scores/submit
 GET  /api/scores/leaderboard/{game_id}
 GET  /api/scores/me/{game_id}
@@ -243,70 +253,83 @@ WS   /api/scores/ws/leaderboard/{game_id}
 
 ---
 
-## 9. ระบบ Real-time Leaderboard
+## ระบบ Real-time Leaderboard
 
-ลำดับการทำงาน:
+### Flow การทำงาน
 
 1. Client ส่งคะแนนไปที่ Backend
 2. Backend บันทึกคะแนนลง MySQL
-3. Backend Publish event ไปที่ Redis
-4. Client ที่ Subscribe ผ่าน WebSocket ได้รับข้อมูลทันที
+3. Backend Publish Event ไปที่ Redis
+4. Client ที่ Subscribe ผ่าน WebSocket จะได้รับข้อมูลทันที
 
 ---
 
-## 10. Troubleshooting
+## Makefile (คำสั่งลัด)
 
-### Docker ไม่ทำงาน
+### คำสั่งหลัก
 
-```bash
-docker-compose -f docker-compose.dev.yml down
-docker-compose -f docker-compose.dev.yml up
-```
+| Command              | Description              |
+| -------------------- | ------------------------ |
+| make up              | เปิด services ทั้งหมด    |
+| make down            | ปิด services ทั้งหมด     |
+| make restart         | restart ทุก service      |
+| make restart-backend | restart backend เท่านั้น |
+
+### Database & Data
+
+| Command    | Description               |
+| ---------- | ------------------------- |
+| make seed  | เพิ่มข้อมูลเกมลงฐานข้อมูล |
+| make clean | ลบ containers และ volumes |
+| make fresh | clean → up → seed         |
+
+### Logs & Debug
+
+| Command           | Description         |
+| ----------------- | ------------------- |
+| make logs         | ดู logs ทุก service |
+| make logs-backend | ดู logs backend     |
+| make logs-redis   | ดู logs redis       |
+| make logs-mysql   | ดู logs mysql       |
+
+---
+
+## Troubleshooting
 
 ### Leaderboard ไม่อัปเดต
 
-- ตรวจสอบ Backend logs
-- ตรวจสอบ WebSocket connection ใน Browser
-- ตรวจสอบ Redis container
+- ตรวจสอบ WebSocket connection ใน Browser DevTools
+- ตรวจสอบ Redis container ยังทำงานอยู่หรือไม่
+- ตรวจสอบ Backend logs (`make logs-backend`)
+
+### Docker มีปัญหา
+
+```bash
+make down
+make up
+```
 
 ---
 
-## 11. วิธีใช้งาน (มุมมองผู้ใช้)
-
-1. Register และ Login
-2. เลือกเกมจากหน้า Home
-3. เล่นเกม
-4. ดูคะแนนและ Leaderboard ที่อัปเดตแบบ Real-time
-
----
-
-## 12. เอกสารอ้างอิงเพิ่มเติม
-
-- FastAPI: [https://fastapi.tiangolo.com/](https://fastapi.tiangolo.com/)
-- React: [https://react.dev/](https://react.dev/)
-- Redis: [https://redis.io/](https://redis.io/)
-- Docker: [https://docs.docker.com/](https://docs.docker.com/)
-
-API Docs:
-
-- Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
-- ReDoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)
-
----
-
-## 13. Quick Start
+## Quick Start
 
 ```bash
 git clone <repository-url>
 cd SDA-Proj
 
 # สร้าง .env
-# รันระบบ
-docker-compose -f docker-compose.dev.yml up
-
-# Seed database
-docker-compose -f docker-compose.dev.yml run --rm backend python -m app.seed
+make up
+make seed
 ```
 
-Frontend: [http://localhost:5173](http://localhost:5173)
-Backend API Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+- Frontend: [http://localhost:5173](http://localhost:5173)
+- Backend API Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+## เอกสารอ้างอิงเพิ่มเติม
+
+- FastAPI: [https://fastapi.tiangolo.com/](https://fastapi.tiangolo.com/)
+- React: [https://react.dev/](https://react.dev/)
+- Redis: [https://redis.io/](https://redis.io/)
+- Docker: [https://docs.docker.com/](https://docs.docker.com/)
