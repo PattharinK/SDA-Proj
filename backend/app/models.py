@@ -23,8 +23,8 @@ class User(Base):
 
 class Game(Base):
     __tablename__ = "games"
-
     id = Column(BigInteger, primary_key=True, autoincrement=True)
+    title = Column(String(100), nullable=False, unique=True)
     title = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     thumbnail_url = Column(String(255), nullable=True)
