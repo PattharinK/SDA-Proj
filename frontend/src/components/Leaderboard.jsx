@@ -6,20 +6,27 @@ import conf from '../services/conf';
 export default function Leaderboard({ gameId }) {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-
     useEffect(() => {
+        let ws;
+
         setLoading(true);
         ax.get(conf.leaderboard(gameId))
             .then(res => setData(res.data))
             .finally(() => setLoading(false));
 
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
         try {
             const apiUrl = new URL(conf.urlApi);
             const wsProtocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${wsProtocol}//${apiUrl.host}/api/scores/ws/leaderboard/${gameId}`;
+            const wsUrl =
+                `${wsProtocol}//${apiUrl.host}` +
+                `/api/scores/ws/leaderboard/${gameId}` +
+                `?token=${encodeURIComponent(token)}`;
 
             console.log("Connecting to WS:", wsUrl);
-            var ws = new WebSocket(wsUrl);
+            ws = new WebSocket(wsUrl);
         } catch (e) {
             console.error('Failed to construct WebSocket URL', e);
             return () => { };
@@ -50,7 +57,7 @@ export default function Leaderboard({ gameId }) {
             }
         };
 
-        return () => ws.close();
+        return () => ws?.close();
     }, [gameId]);
 
     if (loading) {

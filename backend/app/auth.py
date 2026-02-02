@@ -51,3 +51,20 @@ async def get_current_user(  # ดึง User ปัจจุบันจาก 
         raise HTTPException(status_code=401, detail="User not found")
 
     return user
+
+
+async def get_user_from_token(token: str, db: AsyncSession) -> User | None:
+    try:
+        payload = jwt.decode(
+            token,
+            settings.secret_key,
+            algorithms=[settings.algorithm],
+        )
+        username: str | None = payload.get("sub")
+        if username is None:
+            return None
+    except JWTError:
+        return None
+
+    result = await db.execute(select(User).where(User.username == username))
+    return result.scalar_one_or_none()
