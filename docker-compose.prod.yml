@@ -1,0 +1,80 @@
+services:
+    mysql:
+        image: mysql:8.0
+        container_name: sda_mysql
+        restart: always
+        env_file:
+            - .env
+        volumes:
+            - mysql_data:/var/lib/mysql
+            - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+        ports:
+            - "3307:3306"
+        networks:
+            - sda_network
+
+    redis:
+        image: redis:7-alpine
+        container_name: sda_redis
+        restart: always
+        ports:
+            - "6379:6379"
+        networks:
+            - sda_network
+
+    backend:
+        build: ./backend
+        restart: always
+        env_file:
+            - .env
+        depends_on:
+            - mysql
+            - redis
+        networks:
+            - sda_network
+        volumes:
+            - ./backend:/app
+        command: gunicorn app.main:app -k uvicorn.workers.UvicornWorker -w 2 -b 0.0.0.0:8000
+
+    frontend:
+        build: ./frontend
+        container_name: sda_frontend
+        restart: always
+        depends_on:
+            - backend
+        networks:
+            - sda_network
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        command: npm run dev -- --host
+
+    nginx:
+        image: nginx:alpine
+        container_name: sda_nginx
+        restart: always
+        ports:
+            - "80:80"
+        volumes:
+            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - backend
+            - frontend
+        networks:
+            - sda_network
+
+    k6:
+        image: grafana/k6
+        profiles: ["test"]
+        networks:
+            - sda_network
+        volumes:
+            - ./k6:/scripts
+        entrypoint: ["k6"]
+
+volumes:
+    mysql_data:
+
+networks:
+    sda_network:
+        driver: bridge

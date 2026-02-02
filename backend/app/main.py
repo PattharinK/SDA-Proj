@@ -1,22 +1,35 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 
-from app.config import settings
-from app.database import engine, Base
 from app.api.auth import router as auth_router
+from app.api.scores import router as scores_router
+from app.api.games import router as games_router
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(auth_router, prefix="/auth", tags=["auth"])
+api_router = APIRouter(prefix="/api")
+
+# รวมทุก router เข้า api_router
+api_router.include_router(auth_router, prefix="/auth")
+api_router.include_router(games_router)
+api_router.include_router(scores_router)
+
+# include api_router เข้า app
+app.include_router(api_router)
 
 
 @app.get("/")
@@ -26,4 +39,6 @@ async def root():
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    import os, socket
+
+    return {"hostname": socket.gethostname(), "pid": os.getpid()}
