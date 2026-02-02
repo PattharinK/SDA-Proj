@@ -47,7 +47,7 @@ services:
         volumes:
             - ./frontend:/app
             - /app/node_modules
-        command: npm run dev -- --host
+        command: sh -c "npm ci && npm run dev -- --host 0.0.0.0"
 
 volumes:
     mysql_data:
