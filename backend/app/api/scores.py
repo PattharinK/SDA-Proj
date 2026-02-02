@@ -86,49 +86,46 @@ async def submit_score(
     )
     leaderboard = result.scalar_one_or_none()
 
+    score_changed = False
+
     if not leaderboard:
-        db.add(
-            Leaderboard(
-                user_id=current_user.id,
-                game_id=body.game_id,
-                best_score=body.score,
-            )
+        leaderboard = Leaderboard(
+            user_id=current_user.id,
+            game_id=body.game_id,
+            best_score=body.score,
         )
+        db.add(leaderboard)
+        score_changed = True
     elif body.score > leaderboard.best_score:
         leaderboard.best_score = body.score
+        score_changed = True
 
     await db.commit()
 
-    # Publish score update ไป Redis
-    redis = await get_redis()
-    channel = f"leaderboard:{body.game_id}"
-    score_data = {
-        "username": current_user.username,
-        "score": (
-            body.score
-            if body.score > (leaderboard.best_score if leaderboard else 0)
-            else (leaderboard.best_score if leaderboard else body.score)
-        ),
-        "user_id": current_user.id,
-    }
-    num_subscribers = await redis.publish(channel, json.dumps(score_data))
-    logger.info(
-        f"📢 Published to {channel}: {score_data} | Subscribers: {num_subscribers}"
-    )
+    if score_changed:
+        redis_client = await get_redis()
+        channel = f"leaderboard:{body.game_id}"
+        score_data = {
+            "user_id": current_user.id,
+            "username": current_user.username,
+            "score": leaderboard.best_score,
+        }
+        num_subscribers = await redis_client.publish(channel, json.dumps(score_data))
+        logger.info(
+            f"📢 Published to {channel}: {score_data} | Subscribers: {num_subscribers}"
+        )
 
-    return {
-        "message": "Score submitted",
-        "best_score": max(
-            body.score, leaderboard.best_score if leaderboard else body.score
-        ),
-    }
+        return {
+            "message": "Score submitted",
+            "best_score": leaderboard.best_score,
+        }
 
 
 @router.get("/leaderboard/{game_id}")
 async def leaderboard(game_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(
-            User.id.label("user_id"),
+            User.id,
             User.username,
             Leaderboard.best_score,
         )
@@ -138,7 +135,18 @@ async def leaderboard(game_id: int, db: AsyncSession = Depends(get_db)):
         .limit(10)
     )
 
-    return [{"username": row.username, "score": row.best_score} for row in result.all()]
+    data = []
+    for row in result.all():
+        m = row._mapping
+        data.append(
+            {
+                "user_id": m[User.id],
+                "username": m[User.username],
+                "score": m[Leaderboard.best_score],
+            }
+        )
+
+    return data
 
 
 # My Best Score

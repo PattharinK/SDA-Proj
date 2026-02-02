@@ -73,12 +73,6 @@ export default function Leaderboard({ gameId }) {
         );
     }
 
-    const rankStyle = (index) => {
-        if (index === 0) return "text-yellow-400 font-bold";
-        if (index === 1) return "text-gray-300 font-semibold";
-        if (index === 2) return "text-orange-400 font-semibold";
-        return "text-gray-400";
-    };
 
     const rankLabel = (index) => `#${index + 1}`;
 
@@ -93,7 +87,7 @@ export default function Leaderboard({ gameId }) {
         <>
             {data.map((row, index) => (
                 <tr
-                    key={row.id ?? index}
+                    key={row.user_id}
                     className="group transition hover:bg-gray-700/40"
                 >
                     {/* Rank */}
