@@ -1,9 +1,16 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 
 from app.api.auth import router as auth_router
 from app.api.scores import router as scores_router
 from app.api.games import router as games_router
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 app = FastAPI()
 

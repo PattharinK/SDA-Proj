@@ -13,6 +13,15 @@ services:
         networks:
             - sda_network
 
+    redis:
+        image: redis:7-alpine
+        container_name: sda_redis
+        restart: always
+        ports:
+            - "6379:6379"
+        networks:
+            - sda_network
+
     backend:
         build: ./backend
         restart: always
@@ -22,6 +31,7 @@ services:
             - .env
         depends_on:
             - mysql
+            - redis
         networks:
             - sda_network
         volumes:

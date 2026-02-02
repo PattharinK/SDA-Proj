@@ -8,10 +8,45 @@ export default function Leaderboard({ gameId }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // โหลดข้อมูลเริ่มต้น
         setLoading(true);
         ax.get(conf.leaderboard(gameId))
             .then(res => setData(res.data))
             .finally(() => setLoading(false));
+
+        // เชื่อม WebSocket สำหรับรับข่าวอัปเดตแบบ Real-time
+        const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/scores/ws/leaderboard/${gameId}`;
+        const ws = new WebSocket(wsUrl);
+
+        ws.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            
+            if (message.type === "initial") {
+                // ข้อมูลเริ่มต้นจาก WebSocket
+                setData(message.data);
+            } else if (message.type === "update") {
+                // อัปเดตคะแนนใหม่
+                setData(prev => {
+                    const updated = [...prev];
+                    const index = updated.findIndex(p => p.user_id === message.data.user_id);
+                    
+                    if (index !== -1) {
+                        updated[index] = { ...updated[index], score: message.data.score };
+                    } else {
+                        updated.push({
+                            username: message.data.username,
+                            score: message.data.score,
+                            user_id: message.data.user_id
+                        });
+                    }
+                    
+                    // เรียงลำดับใหม่
+                    return updated.sort((a, b) => b.score - a.score).slice(0, 10);
+                });
+            }
+        };
+
+        return () => ws.close();
     }, [gameId]);
 
     if (loading) {
