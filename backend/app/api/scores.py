@@ -178,7 +178,7 @@ async def websocket_leaderboard(
     try:
         result = await db.execute(
             select(
-                User.id.label("user_id"),
+                User.id,
                 User.username,
                 Leaderboard.best_score,
             )
@@ -187,9 +187,16 @@ async def websocket_leaderboard(
             .order_by(Leaderboard.best_score.desc())
             .limit(10)
         )
-        current_data = [
-            {"username": row.username, "score": row.best_score} for row in result.all()
-        ]
+        current_data = []
+        for row in result.all():
+            m = row._mapping
+            current_data.append(
+                {
+                    "user_id": m[User.id],
+                    "username": m[User.username],
+                    "score": m[Leaderboard.best_score],
+                }
+            )
         await websocket.send_json({"type": "initial", "data": current_data})
 
         # รอฟังข่าวจาก Redis

@@ -28,6 +28,7 @@ export default function Leaderboard({ gameId }) {
         ws.onmessage = (event) => {
             const message = JSON.parse(event.data);
 
+            console.log("WS message:", message);
             if (message.type === "initial") {
                 setData(message.data);
             } else if (message.type === "update") {
