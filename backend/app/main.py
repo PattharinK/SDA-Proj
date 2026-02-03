@@ -14,10 +14,6 @@ logging.basicConfig(
 
 app = FastAPI()
 
-@app.on_event("startup")
-async def startup_event():
-    await init_db()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[

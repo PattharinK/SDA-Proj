@@ -2,6 +2,7 @@ from sqlalchemy import (
     Column,
     String,
     DateTime,
+    UniqueConstraint,
     func,
     BigInteger,
     Text,
@@ -25,7 +26,6 @@ class Game(Base):
     __tablename__ = "games"
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     title = Column(String(100), nullable=False, unique=True)
-    title = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     thumbnail_url = Column(String(255), nullable=True)
     player_count = Column(Integer, default=0)
@@ -36,13 +36,9 @@ class GameSession(Base):
     __tablename__ = "game_sessions"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    user_id = Column(
-        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
-    game_id = Column(
-        BigInteger, ForeignKey("games.id", ondelete="CASCADE"), nullable=False
-    )
-    last_played_at = Column(DateTime, server_default=func.now())
+    user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"))
+    game_id = Column(BigInteger, ForeignKey("games.id", ondelete="CASCADE"))
+    __table_args__ = (UniqueConstraint("user_id", "game_id", name="uq_user_game"),)
 
 
 class Leaderboard(Base):

@@ -20,6 +20,9 @@ from app.auth import get_current_user, get_user_from_token
 from app.models import Game, GameSession, Leaderboard, User
 from app.schemas import SubmitScoreRequest
 from app.core.rate_limit import rate_limit
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter(prefix="/scores", tags=["scores"])
@@ -51,12 +54,12 @@ async def submit_score(
 
     validate_score(body.score)
 
-    # ตรวจ Game
-    game: Game | None = await db.get(Game, body.game_id)
+    # 1 ตรวจ Game
+    game = await db.get(Game, body.game_id)
     if not game:
         raise HTTPException(404, "Game not found")
 
-    # ตรวจ session (user เล่นเกมนี้ครั้งแรก?)
+    # 2️ ต้องเคยกด play ก่อนเท่านั้น
     result = await db.execute(
         select(GameSession).where(
             GameSession.user_id == current_user.id,
@@ -66,15 +69,12 @@ async def submit_score(
     session = result.scalar_one_or_none()
 
     if not session:
-        db.add(
-            GameSession(
-                user_id=current_user.id,
-                game_id=body.game_id,
-            )
+        raise HTTPException(
+            status_code=400,
+            detail="Game not started yet",
         )
-        game.player_count += 1
 
-    # Leaderboard (เก็บ best score)
+    # 3️ Leaderboard
     result = await db.execute(
         select(Leaderboard).where(
             Leaderboard.user_id == current_user.id,
@@ -93,6 +93,7 @@ async def submit_score(
         )
         db.add(leaderboard)
         score_changed = True
+
     elif body.score > leaderboard.best_score:
         leaderboard.best_score = body.score
         score_changed = True

@@ -34,11 +34,31 @@ const useGamesStore = create((set) => ({
 
     playGame: async (id) => {
         try {
-            await ax.post(conf.playGame(id));
+            const res = await ax.post(conf.playGame(id));
+            const newPlayerCount = res.data.player_count;
+
+            // 1️ Update current game
+            set((state) => ({
+                game: state.game?.id === id
+                    ? { ...state.game, player_count: newPlayerCount }
+                    : state.game,
+            }));
+
+            // 2️ Update games list (optimistic update)
+            set((state) => ({
+                games: state.games.map((g) =>
+                    g.id === id
+                        ? { ...g, player_count: newPlayerCount }
+                        : g
+                ),
+            }));
+
+            return newPlayerCount;
         } catch (error) {
             console.error('Play game failed', error);
+            throw error;
         }
-    }
+    },
 }));
 
 export default useGamesStore;

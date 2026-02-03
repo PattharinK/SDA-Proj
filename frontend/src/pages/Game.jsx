@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Leaderboard from "../components/Leaderboard";
 import { useAuth, useGames } from '../services/useQuery';
@@ -8,18 +8,21 @@ function Game() {
     const navigate = useNavigate();
     const { game, loading, fetchGame, playGame } = useGames();
     const { isGuest } = useAuth();
+    const lastPlayedGameId = useRef(null);
 
     useEffect(() => {
         fetchGame(gameSlug).catch(() => navigate("/"));
     }, [gameSlug, fetchGame, navigate]);
 
+
     useEffect(() => {
-        if (!game) return;
-        // Only record play for authenticated users, not guests
-        if (!isGuest) {
-            playGame(game.id);
-        }
-    }, [game, playGame, isGuest]);
+        if (!game?.id || isGuest) return;
+
+        if (lastPlayedGameId.current === game.id) return;
+
+        lastPlayedGameId.current = game.id; // บันทึก gameId
+        playGame(game.id).catch(console.error);
+    }, [game?.id, isGuest, playGame]);
 
     if (loading) {
         return <p className="text-center mt-10">Loading...</p>;
