@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    database_url: str = "mysql+aiomysql://game_user:game_pass@mysql:3306/game_db"
+    database_url: str = "mysql+aiomysql://gameuser:gamepassword@mysql:3306/game_db"
     secret_key: str = "your-secret-key-change-in-production"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30

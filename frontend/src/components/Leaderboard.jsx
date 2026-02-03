@@ -62,66 +62,63 @@ export default function Leaderboard({ gameId }) {
 
     if (loading) {
         return (
-            <tr>
-                <td colSpan={3} className="py-8 text-center text-gray-400">
-                    กำลังโหลดคะแนน...
-                </td>
-            </tr>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+                <p className="nes-text">Loading Scores...</p>
+            </div>
         );
     }
 
     if (data.length === 0) {
         return (
-            <tr>
-                <td colSpan={3} className="py-8 text-center text-gray-400">
-                    ยังไม่มีคะแนนในเกมนี้
-                </td>
-            </tr>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+                <p className="nes-text">No scores available for this game</p>
+            </div>
         );
     }
 
-
     const rankLabel = (index) => `#${index + 1}`;
 
-    const rankClass = (index) => {
-        if (index === 0) return "text-yellow-500 font-bold";
-        if (index === 1) return "text-gray-600 font-semibold";
-        if (index === 2) return "text-orange-800 font-semibold";
-        return "text-gray-400";
+    const rankColor = (index) => {
+        if (index === 0) return '#FFD700'; // Gold
+        if (index === 1) return '#C0C0C0'; // Silver
+        if (index === 2) return '#CD7F32'; // Bronze
+        return '#999';
     };
 
     return (
-        <>
-            {data.map((row, index) => (
-                <tr
-                    key={row.user_id}
-                    className="group transition hover:bg-gray-700/40"
-                >
-                    {/* Rank */}
-                    <td className={`px-4 py-3 text-center ${rankClass(index)}`}>
-                        {rankLabel(index)}
-                    </td>
+        <div style={{ padding: '1.5rem' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '16px' }}>
+                <tbody>
+                    {data.map((row, index) => (
+                        <tr
+                            key={row.user_id}
+                            style={{ borderBottom: '2px solid #ccc', padding: '1rem 0' }}
+                        >
+                            {/* Rank */}
+                            <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', color: rankColor(index), fontSize: '18px' }}>
+                                {rankLabel(index)}
+                            </td>
 
-                    {/* Username */}
-                    <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                            <span className="font-medium text-black group-hover:text-white">
-                                {row.username}
-                            </span>
-                        </div>
-                    </td>
+                            {/* Username */}
+                            <td style={{ padding: '1rem' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: '16px' }}>
+                                    {row.username}
+                                </span>
+                            </td>
 
-                    {/* Score */}
-                    <td className="px-4 py-3 text-right">
-                        <span className="font-mono text-lg text-yellow-400">
-                            {row.score}
-                        </span>
-                        <span className="ml-1 text-sm text-gray-400">
-                            pts
-                        </span>
-                    </td>
-                </tr>
-            ))}
-        </>
+                            {/* Score */}
+                            <td style={{ padding: '1rem', textAlign: 'right' }}>
+                                <span style={{ fontFamily: "'Press Start 2P', cursive", fontWeight: 'bold', color: '#FFD700', fontSize: '18px' }}>
+                                    {row.score}
+                                </span>
+                                <span style={{ marginLeft: '0.5rem', fontSize: '12px', fontFamily: "'Press Start 2P', cursive" }}>
+                                    pts
+                                </span>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 }

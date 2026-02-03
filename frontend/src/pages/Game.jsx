@@ -24,32 +24,33 @@ function Game() {
     if (!game) return null;
 
     return (
-        <div className="min-h-screen  text-black bg-gray-50-50">
+        <div style={{ minHeight: '100vh' }}>
             {/* ===== Header ===== */}
-            <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-700">
+            <div className="nes-container" style={{ padding: '1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <button
                     onClick={() => navigate(-1)}
-                    className="px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-300 transition"
+                    className="nes-btn"
+                    style={{ fontSize: '12px' }}
                 >
-                    ← กลับ
+                    &lt; BACK
                 </button>
 
-                <h1 className="text-xl font-semibold">
+                <h1 style={{ fontSize: '1.5rem', margin: 0 }}>
                     {game.title}
                 </h1>
             </div>
 
             {/* ===== Main Content ===== */}
-            <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem 2rem 1.5rem', display: 'grid', gridTemplateColumns: '1fr 300px', gap: '1.5rem' }}>
 
                 {/* ===== Game Frame ===== */}
-                <div className="lg:col-span-3">
-                    <div className="w-full bg-black border-4 border-gray-700 rounded-xl shadow-2xl overflow-hidden">
+                <div>
+                    <div className="nes-container is-rounded" style={{ overflow: 'hidden', padding: 0 }}>
                         <iframe
                             src={`/games/${gameSlug}/index.html`}
                             title={game.title}
                             className="w-full h-full"
-                            style={{ height: "70vh" }}
+                            style={{ height: "70vh", border: 'none', width: '100%' }}
                             onLoad={(e) => {
                                 e.target.contentWindow.postMessage(
                                     {
@@ -66,18 +67,18 @@ function Game() {
                 </div>
 
                 {/* ===== Game Info ===== */}
-                <div className="bg-gray-100 rounded-xl p-4 h-fit">
-                    <h2 className="text-lg font-semibold mb-2">
-                        รายละเอียดเกม
+                <div className="nes-container is-rounded" style={{ padding: '1rem', height: 'fit-content' }}>
+                    <h2 style={{ fontSize: '1.1rem', marginTop: 0 }}>
+                        Description
                     </h2>
 
-                    <p className="text-black leading-relaxed mb-4">
+                    <p style={{ fontSize: '12px', lineHeight: '1.5', marginBottom: '1rem' }}>
                         {game.description || "ไม่มีคำอธิบาย"}
                     </p>
 
-                    <div className="text-sm text-gray-800">
+                    <div style={{ fontSize: '12px' }}>
                         👥 Players:{" "}
-                        <span className="text-black font-medium">
+                        <span style={{ fontWeight: 'bold' }}>
                             {game.player_count}
                         </span>
                     </div>
@@ -85,12 +86,12 @@ function Game() {
             </div>
 
             {/* ===== Leaderboard ===== */}
-            <div className="max-w-6xl mx-auto px-6 pb-12">
-                <h2 className="text-lg font-semibold mb-4">
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem 2rem 1.5rem' }}>
+                <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
                     Leaderboard
                 </h2>
 
-                <div className="bg-gray-200 rounded-lg p-4">
+                <div className="nes-container is-rounded">
                     <Leaderboard gameId={game.id} />
                 </div>
             </div>
