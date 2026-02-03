@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAuth, useGames } from '../services/useQuery';
+import { useGames } from '../services/useQuery'; // ไม่ต้องใช้ useAuth แล้วเพราะย้ายไป Navbar
+import Navbar from "../components/Navbar"; // นำเข้า Navbar
 
 function Home() {
-    const { logout, user, isGuest } = useAuth();
     const { games, loading, fetchGames } = useGames();
 
     useEffect(() => {
@@ -11,55 +11,49 @@ function Home() {
     }, [fetchGames]);
 
     return (
-        <div className="nes-container" style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto', marginTop: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h1 style={{ fontSize: '2.5rem', margin: 0 }}>PSU888</h1>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    {user && (
-                        <p style={{ margin: 0 }}>
-                            Welcome!, <strong>{user.username}</strong>
-                            {isGuest && <span style={{ marginLeft: '0.5rem', backgroundColor: '#666', color: '#fff', padding: '0.25rem 0.5rem', borderRadius: '3px', fontSize: '10px' }}>GUEST</span>}
-                        </p>
-                    )}
-                    <button onClick={logout} className="nes-btn is-error">Logout</button>
-                </div>
+        <div>
+            {/* ใส่ Navbar ไว้ด้านบนสุด */}
+            <Navbar />
+
+            <div className="nes-container" style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
+
+                {/* ลบ Header เดิมออก และเหลือไว้แค่ส่วน Content */}
+
+                <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem', borderLeft: "4px solid black", paddingLeft: "10px" }}>
+                    Available Games
+                </h2>
+
+                {loading && <p className="nes-text">Loading games...</p>}
+
+                {!loading && games.length === 0 && <p className="nes-text">No games found</p>}
+
+                <ul style={{ listStyle: "none", padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                    {games.map((game) => {
+                        const slug = game.title
+                            .replace(/\s+/g, "-")
+                            .toLowerCase();
+
+                        return (
+                            <li
+                                key={game.id}
+                                className="nes-container is-rounded with-title"
+                                style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', height: '100%' }}
+                            >
+                                <p className="title">{game.title}</p>
+
+                                <div style={{ marginBottom: '1rem', flexGrow: 1 }}>
+                                    <p>Players: {game.player_count}</p>
+                                    <p style={{ fontSize: '0.8rem', color: '#666' }}>{game.description?.substring(0, 50)}...</p>
+                                </div>
+
+                                <Link to={`/games/${slug}`} className="nes-btn is-primary" style={{ textAlign: 'center', width: '100%' }}>
+                                    Play Now
+                                </Link>
+                            </li>
+                        );
+                    })}
+                </ul>
             </div>
-
-            <hr style={{ margin: "1.5rem 0" }} />
-
-            <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem' }}>Available Games</h2>
-
-            {loading && <p className="nes-text">Loading games...</p>}
-
-            {!loading && games.length === 0 && <p className="nes-text">No games found</p>}
-
-            <ul style={{ listStyle: "none", padding: 0, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
-                {games.map((game) => {
-                    const slug = game.title
-                        .replace(/\s+/g, "-")
-                        .toLowerCase();
-
-                    return (
-                        <li
-                            key={game.id}
-                            className="nes-container is-rounded"
-                            style={{
-                                padding: '1rem',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                height: '100%',
-                            }}
-                        >
-                            <h3 style={{ marginTop: 0 }}>{game.title}</h3>
-                            <p>Players: {game.player_count}</p>
-
-                            <Link to={`/games/${slug}`} className="nes-btn is-primary" style={{ marginTop: 'auto', textAlign: 'center', display: 'block' }}>
-                                Play
-                            </Link>
-                        </li>
-                    );
-                })}
-            </ul>
         </div>
     );
 }

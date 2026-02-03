@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Leaderboard from "../components/Leaderboard";
 import { useAuth, useGames } from '../services/useQuery';
+import Navbar from "../components/Navbar"; // นำเข้า Navbar
 
 function Game() {
     const { gameSlug } = useParams();
@@ -20,7 +21,7 @@ function Game() {
 
         if (lastPlayedGameId.current === game.id) return;
 
-        lastPlayedGameId.current = game.id; // บันทึก gameId
+        lastPlayedGameId.current = game.id;
         playGame(game.id).catch(console.error);
     }, [game?.id, isGuest, playGame]);
 
@@ -31,82 +32,83 @@ function Game() {
     if (!game) return null;
 
     return (
-        <div style={{ minHeight: '100vh' }}>
-            {/* ===== Header ===== */}
-            <div className="nes-container" style={{ padding: '1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="nes-btn"
-                    style={{ fontSize: '12px' }}
-                >
-                    &lt; BACK
-                </button>
+        <div style={{ minHeight: '100vh', paddingBottom: '2rem' }}>
 
-                <h1 style={{ fontSize: '1.5rem', margin: 0 }}>
-                    {game.title}
-                </h1>
-            </div>
+            {/* ใส่ Navbar */}
+            <Navbar />
 
             {/* ===== Main Content ===== */}
-            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem 2rem 1.5rem', display: 'grid', gridTemplateColumns: '1fr 300px', gap: '1.5rem' }}>
+            {/* เพิ่ม margin-top เล็กน้อยไม่ให้ติด Navbar เกินไป */}
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
 
-                {/* ===== Game Frame ===== */}
-                <div>
-                    <div className="nes-container is-rounded" style={{ overflow: 'hidden', padding: 0, aspectRatio: '16/9' }}>
-                        <iframe
-                            src={`/games/${gameSlug}/index.html`}
-                            title={game.title}
-                            className="w-full h-full"
-                            style={{ height: "100%", border: 'none', width: '100%' }}
-                            onLoad={(e) => {
-                                e.target.contentWindow.postMessage(
-                                    {
-                                        type: "INIT_GAME",
-                                        gameId: game.id,
-                                        token: localStorage.getItem("token"),
-                                        isGuest: isGuest,
-                                    },
-                                    "*"
-                                );
-                            }}
-                        />
+                {/* Header ย่อย (ปุ่ม Back + ชื่อเกม) */}
+                <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="nes-btn"
+                        style={{ padding: '0.5rem 1rem' }}
+                    >
+                        &lt; BACK
+                    </button>
 
-                    </div>
+                    <h1 style={{ fontSize: '1.5rem', margin: 0 }}>
+                        Playing: {game.title}
+                    </h1>
                 </div>
 
-                {/* ===== Game Info ===== */}
-                <div className="nes-container is-rounded" style={{ padding: '1rem', height: 'fit-content' }}>
-                    <h2 style={{ fontSize: '1.1rem', marginTop: 0 }}>
-                        Description
-                    </h2>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem' }}>
 
-                    <p style={{ fontSize: '12px', lineHeight: '1.5', marginBottom: '1rem' }}>
-                        {game.description || "ไม่มีคำอธิบาย"}
-                    </p>
-
-                    <div style={{ fontSize: '12px' }}>
-                        👥 Players:{" "}
-                        <span style={{ fontWeight: 'bold' }}>
-                            {game.player_count}
-                        </span>
-                    </div>
-
-                    {isGuest && (
-                        <div style={{ marginTop: '1rem', padding: '0.5rem', backgroundColor: '#f0f0f0', borderRadius: '3px', fontSize: '11px', color: '#666' }}>
-                            Scores not saved in guest mode
+                    {/* ===== Left Col: Game Frame ===== */}
+                    <div>
+                        <div className="nes-container is-rounded" style={{ overflow: 'hidden', padding: 0, aspectRatio: '16/9', border: '4px solid black' }}>
+                            <iframe
+                                src={`/games/${gameSlug}/index.html`}
+                                title={game.title}
+                                style={{ height: "100%", width: '100%', border: 'none' }}
+                                onLoad={(e) => {
+                                    e.target.contentWindow.postMessage(
+                                        {
+                                            type: "INIT_GAME",
+                                            gameId: game.id,
+                                            token: localStorage.getItem("token"),
+                                            isGuest: isGuest,
+                                        },
+                                        "*"
+                                    );
+                                }}
+                            />
                         </div>
-                    )}
-                </div>
-            </div>
 
-            {/* ===== Leaderboard ===== */}
-            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem 2rem 1.5rem' }}>
-                <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-                    Leaderboard
-                </h2>
+                        {/* Leaderboard ย้ายมาอยู่ใต้เกม (Optional: หรือจะไว้ที่เดิมก็ได้) */}
+                        <div style={{ marginTop: '2rem' }}>
+                            <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Leaderboard</h2>
+                            <div className="nes-container is-rounded">
+                                <Leaderboard gameId={game.id} />
+                            </div>
+                        </div>
+                    </div>
 
-                <div className="nes-container is-rounded">
-                    <Leaderboard gameId={game.id} />
+                    {/* ===== Right Col: Game Info ===== */}
+                    <div className="nes-container is-dark with-title" style={{ height: 'fit-content' }}>
+                        <p className="title">Info</p>
+
+                        <div style={{ marginBottom: '1rem' }}>
+                            <span style={{ color: '#4cc' }}>Description:</span>
+                            <p style={{ fontSize: '12px', marginTop: '0.5rem' }}>
+                                {game.description || "ไม่มีคำอธิบาย"}
+                            </p>
+                        </div>
+
+                        <div style={{ fontSize: '12px' }}>
+                            Players: <span style={{ color: '#f7d51d' }}>{game.player_count}</span>
+                        </div>
+
+                        {isGuest && (
+                            <div style={{ marginTop: '1.5rem', padding: '0.5rem', border: '2px dashed white', borderRadius: '4px', fontSize: '10px', textAlign: 'center' }}>
+                                Guest scores are not saved.
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
