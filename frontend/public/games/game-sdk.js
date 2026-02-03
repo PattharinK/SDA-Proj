@@ -3,19 +3,22 @@
 
     let GAME_ID = null;
     let AUTH_TOKEN = null;
+    let IS_GUEST = false;
 
     window.addEventListener("message", (event) => {
         if (event.data?.type === "INIT_GAME") {
             GAME_ID = event.data.gameId;
             AUTH_TOKEN = event.data.token;
+            IS_GUEST = event.data.isGuest || false;
 
-            console.log("Game initialized", GAME_ID);
+            console.log("Game initialized", GAME_ID, IS_GUEST ? "(Guest)" : "(User)");
         }
     });
 
     window.GameSDK = {
         submitScore(score) {
-            if (!GAME_ID || !AUTH_TOKEN) return;
+            // Guest users don't submit scores
+            if (IS_GUEST || !GAME_ID || !AUTH_TOKEN) return;
 
             fetch(`${API_BASE}/api/scores/submit`, {
                 method: "POST",
@@ -31,6 +34,9 @@
         },
 
         async loadBestScore() {
+            // Guest users return 0
+            if (IS_GUEST) return 0;
+
             if (!GAME_ID || !AUTH_TOKEN) return 0;
 
             try {

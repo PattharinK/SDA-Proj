@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth, useGames } from '../services/useQuery';
 
 function Home() {
-    const { logout, user } = useAuth();
+    const { logout, user, isGuest } = useAuth();
     const { games, loading, fetchGames } = useGames();
 
     useEffect(() => {
@@ -15,7 +15,12 @@ function Home() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2.5rem', margin: 0 }}>PSU888</h1>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    {user && <p style={{ margin: 0 }}>Welcome!, <strong>{user.username}</strong></p>}
+                    {user && (
+                        <p style={{ margin: 0 }}>
+                            Welcome!, <strong>{user.username}</strong>
+                            {isGuest && <span style={{ marginLeft: '0.5rem', backgroundColor: '#666', color: '#fff', padding: '0.25rem 0.5rem', borderRadius: '3px', fontSize: '10px' }}>GUEST</span>}
+                        </p>
+                    )}
                     <button onClick={logout} className="nes-btn is-error">Logout</button>
                 </div>
             </div>

@@ -7,6 +7,7 @@ function Game() {
     const { gameSlug } = useParams();
     const navigate = useNavigate();
     const { game, loading, fetchGame, playGame } = useGames();
+    const { isGuest } = useAuth();
 
     useEffect(() => {
         fetchGame(gameSlug).catch(() => navigate("/"));
@@ -14,8 +15,11 @@ function Game() {
 
     useEffect(() => {
         if (!game) return;
-        playGame(game.id);
-    }, [game, playGame]);
+        // Only record play for authenticated users, not guests
+        if (!isGuest) {
+            playGame(game.id);
+        }
+    }, [game, playGame, isGuest]);
 
     if (loading) {
         return <p className="text-center mt-10">Loading...</p>;
@@ -57,6 +61,7 @@ function Game() {
                                         type: "INIT_GAME",
                                         gameId: game.id,
                                         token: localStorage.getItem("token"),
+                                        isGuest: isGuest,
                                     },
                                     "*"
                                 );
@@ -82,6 +87,12 @@ function Game() {
                             {game.player_count}
                         </span>
                     </div>
+
+                    {isGuest && (
+                        <div style={{ marginTop: '1rem', padding: '0.5rem', backgroundColor: '#f0f0f0', borderRadius: '3px', fontSize: '11px', color: '#666' }}>
+                            Scores not saved in guest mode
+                        </div>
+                    )}
                 </div>
             </div>
 
