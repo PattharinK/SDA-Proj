@@ -5,6 +5,7 @@ import logging
 from app.api.auth import router as auth_router
 from app.api.scores import router as scores_router
 from app.api.games import router as games_router
+from app.init_db import init_db
 
 # Configure logging
 logging.basicConfig(

@@ -7,6 +7,7 @@ function Login() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const login = useAuthStore((state) => state.login);
+    const loginAsGuest = useAuthStore((state) => state.loginAsGuest);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -24,42 +25,75 @@ function Login() {
         }
     };
 
+    const handleGuestLogin = () => {
+        loginAsGuest();
+        navigate('/');
+    };
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-                <h2 className="text-2xl font-bold text-center">Login</h2>
+        <div style={{ padding: '2rem', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="nes-container is-rounded" style={{ maxWidth: '400px', width: '100%' }}>
+                <h2 className="title">Login</h2>
 
-                {error && <div class="bg-red-100 text-red-700 p-3 rounded">{error}</div>}
+                {error && (
+                    <div className="nes-container is-rounded is-error" style={{ marginBottom: '1rem' }}>
+                        <p>{error}</p>
+                    </div>
+                )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        value={form.username}
-                        onChange={(e) => setForm({ ...form, username: e.target.value })}
-                        className="w-full p-3 border rounded"
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={form.password}
-                        onChange={(e) => setForm({ ...form, password: e.target.value })}
-                        className="w-full p-3 border rounded"
-                        required
-                    />
+                <form onSubmit={handleSubmit}>
+                    <div className="nes-field" style={{ marginBottom: '1rem' }}>
+                        <label htmlFor="username">Username</label>
+                        <input
+                            id="username"
+                            type="text"
+                            className="nes-input"
+                            placeholder="Enter your username"
+                            value={form.username}
+                            onChange={(e) => setForm({ ...form, username: e.target.value })}
+                            style={{ fontSize: '12px' }}
+                            required
+                        />
+                    </div>
+                    <div className="nes-field" style={{ marginBottom: '1rem' }}>
+                        <label htmlFor="password">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            className="nes-input"
+                            placeholder="Enter your password"
+                            value={form.password}
+                            onChange={(e) => setForm({ ...form, password: e.target.value })}
+                            style={{ fontSize: '12px' }}
+                            required
+                        />
+                    </div>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 disabled:opacity-50"
+                        className="nes-btn is-primary"
+                        style={{ width: '100%', marginBottom: '1rem' }}
                     >
                         {loading ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
 
-                <p className="text-center">
-                    Don't have an account? <Link to="/register" className="text-blue-500">Register</Link>
-                </p>
+                <hr style={{ margin: '1rem 0' }} />
+
+                <button
+                    onClick={handleGuestLogin}
+                    className="nes-btn"
+                    style={{ width: '100%', marginBottom: '1rem', backgroundColor: '#666' }}
+                >
+                    ▶ Play as Guest
+                </button>
+
+                <hr style={{ margin: '1rem 0' }} />
+
+                <p style={{ textAlign: 'center', marginBottom: '0.5rem', fontSize: '12px' }}>Don't have an account?</p>
+                <Link to="/register" className="nes-btn is-success" style={{ display: 'block', textAlign: 'center', width: '100%' }}>
+                    Register
+                </Link>
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update, text
+from sqlalchemy.exc import IntegrityError
 
 from app.database import get_db
 from app.models import Game
@@ -9,13 +10,38 @@ from app.models import Game, GameSession, User
 from app.schemas import GameResponse
 from app.core.rate_limit import rate_limit
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 router = APIRouter(prefix="/games", tags=["games"])
 
 
 @router.get("/", response_model=list[GameResponse])
 async def list_games(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Game).order_by(Game.created_at.desc()))
+    logger.info("Fetching all games")
+
+    # และทิ้ง query cache
+    await db.execute(text("SELECT 1"))  # Warm up connection
+
+    db.expire_all()
+
+    # Use with_for_update() หรือ populate_existing
+    stmt = (
+        select(Game)
+        .order_by(Game.created_at.desc())
+        .execution_options(populate_existing=True)
+    )
+
+    result = await db.execute(stmt)
     games = result.scalars().all()
+
+    for game in games:
+        logger.info(
+            f"Game {game.id} ({game.title}): player_count = {game.player_count}"
+        )
+
     return games
 
 
@@ -49,30 +75,57 @@ async def play_game(
         limit=10,
         window=300,
     )
-    # 1️ ตรวจเกม
-    game = await db.get(Game, game_id)
-    if not game:
-        raise HTTPException(404, "Game not found")
 
-    # 2️ ตรวจว่า user เคยเล่นเกมนี้ไหม
+    logger.info(f"User {current_user.id} attempting to play game {game_id}")
+
+    # CHECK ก่อน
     result = await db.execute(
         select(GameSession).where(
             GameSession.user_id == current_user.id,
             GameSession.game_id == game_id,
         )
     )
-    session = result.scalar_one_or_none()
+    existing = result.scalar_one_or_none()
 
-    # 3️ ถ้ายังไม่เคย → เพิ่ม session + เพิ่ม player_count
-    if not session:
-        db.add(
-            GameSession(
-                user_id=current_user.id,
-                game_id=game_id,
-            )
+    if existing:
+        # Query fresh data
+        game = await db.get(Game, game_id, options=[])
+        await db.refresh(game)
+        logger.info(
+            f"Game {game_id} already started for user {current_user.id}, player_count: {game.player_count}"
         )
-        game.player_count += 1
-        await db.commit()
+        return {
+            "message": "Game already started",
+            "player_count": game.player_count,
+        }
+
+    # ดู player_count ก่อน update
+    before_result = await db.execute(
+        select(Game.player_count).where(Game.id == game_id)
+    )
+    before_count = before_result.scalar_one()
+    logger.info(f"Game {game_id} player_count BEFORE: {before_count}")
+
+    # เพิ่ม session
+    db.add(GameSession(user_id=current_user.id, game_id=game_id))
+
+    # Atomic increment
+    await db.execute(
+        update(Game)
+        .where(Game.id == game_id)
+        .values(player_count=Game.player_count + 1)
+    )
+
+    await db.commit()
+
+    # Query ค่าใหม่หลัง commit
+    game = await db.get(Game, game_id)
+    await db.refresh(game)
+
+    logger.info(
+        f"Game {game_id} player_count AFTER: {game.player_count} (expected: {before_count + 1})"
+    )
+    logger.info(f"User {current_user.id} started game {game_id}")
 
     return {
         "message": "Game started",

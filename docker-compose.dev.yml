@@ -12,6 +12,11 @@ services:
             - "3307:3306"
         networks:
             - sda_network
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
 
     redis:
         image: redis:7-alpine
@@ -30,8 +35,10 @@ services:
         env_file:
             - .env
         depends_on:
-            - mysql
-            - redis
+            mysql:
+                condition: service_healthy
+            redis:
+                condition: service_started
         networks:
             - sda_network
         volumes:

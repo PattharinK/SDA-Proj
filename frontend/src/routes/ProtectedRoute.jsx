@@ -8,12 +8,12 @@ const ProtectedRoute = () => {
         return <div>Loading...</div>;
     }
 
-    // ถ้าไม่มี User ให้ Redirect ไปหน้า Login
+    // ถ้าไม่มี User และไม่ใช่ Guest ให้ Redirect ไปหน้า Login
     if (!user) {
         return <Navigate to="/login" replace />;
     }
 
-    // ถ้ามี User ให้ปล่อยผ่านไป render ลูกหลาน (Outlet)
+    // ถ้ามี User หรือ Guest ให้ปล่อยผ่าน
     return <Outlet />;
 };
 

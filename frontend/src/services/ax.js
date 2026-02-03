@@ -17,8 +17,13 @@ ax.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            localStorage.removeItem('token');
-            window.location.href = '/login';
+            const token = localStorage.getItem('token');
+            const guestId = localStorage.getItem('guestId');
+            // Only redirect to login if user has a token (not guest mode)
+            if (token && !guestId) {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
         }
         return Promise.reject(error);
     }
