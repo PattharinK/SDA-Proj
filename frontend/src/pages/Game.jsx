@@ -45,12 +45,12 @@ function Game() {
 
                 {/* ===== Game Frame ===== */}
                 <div>
-                    <div className="nes-container is-rounded" style={{ overflow: 'hidden', padding: 0 }}>
+                    <div className="nes-container is-rounded" style={{ overflow: 'hidden', padding: 0, aspectRatio: '16/9' }}>
                         <iframe
                             src={`/games/${gameSlug}/index.html`}
                             title={game.title}
                             className="w-full h-full"
-                            style={{ height: "70vh", border: 'none', width: '100%' }}
+                            style={{ height: "100%", border: 'none', width: '100%' }}
                             onLoad={(e) => {
                                 e.target.contentWindow.postMessage(
                                     {

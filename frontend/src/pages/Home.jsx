@@ -28,7 +28,7 @@ function Home() {
 
             {!loading && games.length === 0 && <p className="nes-text">No games found</p>}
 
-            <ul style={{ listStyle: "none", padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+            <ul style={{ listStyle: "none", padding: 0, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                 {games.map((game) => {
                     const slug = game.title
                         .replace(/\s+/g, "-")
