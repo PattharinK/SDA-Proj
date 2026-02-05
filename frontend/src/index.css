@@ -1,5 +1,122 @@
 body {
   font-family: 'Press Start 2P', cursive;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark Theme Styles */
+.dark-theme {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+.dark-theme .nes-container {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border-color: #666;
+}
+
+.dark-theme .nes-input,
+.dark-theme .nes-select select {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #666;
+}
+
+/* Dark mode placeholder text */
+.dark-theme .nes-input::placeholder {
+  color: #999 !important;
+  opacity: 1 !important;
+}
+
+.dark-theme .nes-input::-webkit-input-placeholder {
+  color: #999 !important;
+}
+
+.dark-theme .nes-input::-moz-placeholder {
+  color: #999 !important;
+  opacity: 1 !important;
+}
+
+.dark-theme .nes-input:-ms-input-placeholder {
+  color: #999 !important;
+}
+
+/* Explicit placeholder classes for immediate updates */
+.dark-placeholder::placeholder {
+  color: #999 !important;
+  opacity: 1 !important;
+}
+
+.dark-placeholder::-webkit-input-placeholder {
+  color: #999 !important;
+}
+
+.dark-placeholder::-moz-placeholder {
+  color: #999 !important;
+  opacity: 1 !important;
+}
+
+.light-placeholder::placeholder {
+  color: #666 !important;
+  opacity: 1 !important;
+}
+
+.light-placeholder::-webkit-input-placeholder {
+  color: #666 !important;
+}
+
+.light-placeholder::-moz-placeholder {
+  color: #666 !important;
+  opacity: 1 !important;
+}
+
+/* Dark mode button styles */
+.dark-theme .nes-btn {
+  border-color: #666;
+}
+
+/* Default buttons: adapt to dark theme */
+.dark-theme .nes-btn:not(.is-primary):not(.is-success):not(.is-error):not(.is-warning) {
+  color: #e0e0e0 !important;
+  background-color: #3a3a3a !important;
+  border-color: #666 !important;
+}
+
+/* Colored buttons: keep their original colors */
+.dark-theme .nes-btn.is-primary {
+  color: #fff !important;
+  background-color: #209cee !important;
+}
+
+.dark-theme .nes-btn.is-success {
+  color: #fff !important;
+  background-color: #92cc41 !important;
+}
+
+.dark-theme .nes-btn.is-error {
+  color: #fff !important;
+  background-color: #e76e55 !important;
+}
+
+.dark-theme nav {
+  background-color: #2a2a2a !important;
+  border-bottom-color: #666 !important;
+}
+
+.dark-theme .title,
+.dark-theme h1,
+.dark-theme h2,
+.dark-theme h3 {
+  color: #e0e0e0;
+}
+
+.dark-theme a:not(.nes-btn) {
+  color: #e0e0e0;
+}
+
+.dark-theme .nes-container.with-title>.title {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
 }
 
 /* Fullscreen mode styles for ResizableGameScreen */
@@ -11,6 +128,95 @@ body {
   height: 100vh !important;
   z-index: 9999;
   background: #000;
+}
+
+/* Page Transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Button Hover Effects */
+.nes-btn {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.nes-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nes-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Score Update Animation */
+@keyframes scoreUpdate {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+    color: #FFD700;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.score-update {
+  animation: scoreUpdate 0.5s ease;
+}
+
+/* Loading Spinner Animation */
+.nes-icon.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  body {
+    font-size: 10px;
+  }
+
+  .nes-container {
+    padding: 0.8rem;
+  }
+
+  .nes-btn {
+    font-size: 10px;
+    padding: 0.5rem 1rem;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  p {
+    font-size: 10px;
+  }
 }
 
 @import "tailwindcss";

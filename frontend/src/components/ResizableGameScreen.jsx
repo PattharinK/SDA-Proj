@@ -14,6 +14,7 @@ const ICON_EXIT_FULLSCREEN = '⊡';
  * ResizableGameScreen Component
  * 
  * Displays a game iframe with resize and fullscreen capabilities.
+ * Responsive: adjusts default size for mobile devices.
  * 
  * @param {string} gameSlug - Game slug for iframe src
  * @param {string} gameTitle - Game title for iframe title
@@ -22,7 +23,16 @@ const ICON_EXIT_FULLSCREEN = '⊡';
  * @param {boolean} isGuest - Guest status for postMessage
  */
 function ResizableGameScreen({ gameSlug, gameTitle, gameId, token, isGuest }) {
-    const [dimensions, setDimensions] = useState({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [dimensions, setDimensions] = useState(() => {
+        const width = window.innerWidth < 768
+            ? Math.min(window.innerWidth - 40, DEFAULT_WIDTH)
+            : DEFAULT_WIDTH;
+        const height = window.innerWidth < 768
+            ? Math.min(window.innerHeight - 200, DEFAULT_HEIGHT)
+            : DEFAULT_HEIGHT;
+        return { width, height };
+    });
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
 
@@ -98,6 +108,25 @@ function ResizableGameScreen({ gameSlug, gameTitle, gameId, token, isGuest }) {
         document.addEventListener('fullscreenchange', handleFullscreenChange);
         return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
     }, []);
+
+    // ========== Responsive Handling ==========
+    useEffect(() => {
+        const handleResize = () => {
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+
+            // Adjust dimensions if switching to mobile
+            if (mobile && dimensions.width > window.innerWidth - 40) {
+                setDimensions({
+                    width: Math.min(window.innerWidth - 40, DEFAULT_WIDTH),
+                    height: Math.min(window.innerHeight - 200, DEFAULT_HEIGHT)
+                });
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [dimensions]);
 
     // ========== Game Initialization ==========
     const handleIframeLoad = (e) => {

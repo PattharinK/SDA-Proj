@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../services/useQuery';
 import { SPACING, FONT_SIZE, COLORS } from '../styles/tokens';
+import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
     const { user, isGuest, logout } = useAuth();
@@ -23,7 +24,10 @@ const Navbar = () => {
             </Link>
 
             {/* User Info & Actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.md }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.md, flexWrap: 'wrap' }}>
+                {/* Theme Toggle */}
+                <ThemeToggle />
+
                 {/* แสดงชื่อ User */}
                 <div style={{ textAlign: 'right', lineHeight: '1.2' }}>
                     <span style={{ fontWeight: 'bold' }}>{user?.username || 'Guest'}</span>
@@ -31,7 +35,7 @@ const Navbar = () => {
 
                 {/* ปุ่ม Login/Register หรือ Logout */}
                 {isGuest ? (
-                    <div style={{ display: 'flex', gap: SPACING.sm }}>
+                    <div style={{ display: 'flex', gap: SPACING.sm, flexWrap: 'wrap' }}>
                         <Link to="/login" className="nes-btn is-primary">
                             Login
                         </Link>
@@ -40,9 +44,14 @@ const Navbar = () => {
                         </Link>
                     </div>
                 ) : (
-                    <button onClick={logout} className="nes-btn is-error">
-                        Logout
-                    </button>
+                    <div style={{ display: 'flex', gap: SPACING.sm, flexWrap: 'wrap' }}>
+                        <Link to="/profile" className="nes-btn">
+                            Profile
+                        </Link>
+                        <button onClick={logout} className="nes-btn is-error">
+                            Logout
+                        </button>
+                    </div>
                 )}
             </div>
         </nav>

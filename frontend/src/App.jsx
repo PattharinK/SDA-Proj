@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
 import Game from './pages/Game';
+import Profile from './pages/Profile';
 
 function App() {
   const { checkAuth } = useAuth();
@@ -24,6 +25,7 @@ function App() {
       {/* Login/Register สำหรับคนที่อยากสมัครสมาชิก */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/profile" element={<Profile />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
