@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Leaderboard from "../components/Leaderboard";
+import ResizableGameScreen from "../components/ResizableGameScreen";
 import { useAuth, useGames } from '../services/useQuery';
-import Navbar from "../components/Navbar"; // นำเข้า Navbar
+import Navbar from "../components/Navbar";
 
 function Game() {
     const { gameSlug } = useParams();
@@ -60,24 +61,13 @@ function Game() {
 
                     {/* ===== Left Col: Game Frame ===== */}
                     <div>
-                        <div className="nes-container is-rounded" style={{ overflow: 'hidden', padding: 0, aspectRatio: '16/9', border: '4px solid black' }}>
-                            <iframe
-                                src={`/games/${gameSlug}/index.html`}
-                                title={game.title}
-                                style={{ height: "100%", width: '100%', border: 'none' }}
-                                onLoad={(e) => {
-                                    e.target.contentWindow.postMessage(
-                                        {
-                                            type: "INIT_GAME",
-                                            gameId: game.id,
-                                            token: localStorage.getItem("token"),
-                                            isGuest: isGuest,
-                                        },
-                                        "*"
-                                    );
-                                }}
-                            />
-                        </div>
+                        <ResizableGameScreen
+                            gameSlug={gameSlug}
+                            gameTitle={game.title}
+                            gameId={game.id}
+                            token={localStorage.getItem("token")}
+                            isGuest={isGuest}
+                        />
 
                         {/* Leaderboard ย้ายมาอยู่ใต้เกม (Optional: หรือจะไว้ที่เดิมก็ได้) */}
                         <div style={{ marginTop: '2rem' }}>

@@ -2,4 +2,15 @@ body {
   font-family: 'Press Start 2P', cursive;
 }
 
+/* Fullscreen mode styles for ResizableGameScreen */
+.fullscreen-mode {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999;
+  background: #000;
+}
+
 @import "tailwindcss";
