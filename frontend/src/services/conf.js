@@ -12,7 +12,7 @@ const conf = {
     me: `${API}/api/auth/me`,
 
     // ระบบ Games
-    games: `${API}/api/games`,
+    games: `${API}/api/games/`,
     gameById: (gameId) => `${API}/api/games/${gameId}`,
     gameByTitle: (title) => `${API}/api/games/by-title/${title}`,
     playGame: (gameId) => `${API}/api/games/${gameId}/play`,
