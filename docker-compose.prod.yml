@@ -24,6 +24,7 @@ services:
 
     backend:
         build: ./backend
+        container_name: sda_backend
         restart: always
         env_file:
             - .env
@@ -65,15 +66,16 @@ services:
 
     k6:
         image: grafana/k6
-        profiles: ["test"]
+        profiles: [ "test" ]
         networks:
             - sda_network
         volumes:
             - ./k6:/scripts
-        entrypoint: ["k6"]
+        entrypoint: [ "k6" ]
 
 volumes:
     mysql_data:
+
 
 networks:
     sda_network:

@@ -79,10 +79,10 @@ logs:
 	docker-compose -f docker-compose.dev.yml logs -f --tail=50
 
 logs-backend:
-	docker-compose -f docker-compose.dev.yml logs -f backend
+	docker-compose -f docker-compose.dev.yml logs -f sda_backend
 
 logs-redis:
-	docker-compose -f docker-compose.dev.yml logs -f redis
+	docker-compose -f docker-compose.dev.yml logs -f sda_redis
 
 logs-mysql:
 	docker-compose -f docker-compose.dev.yml logs -f mysql
