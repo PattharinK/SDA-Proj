@@ -79,22 +79,21 @@ function Login() {
                 </form>
 
                 <hr style={{ margin: '1rem 0' }} />
-
-                <button
-                    onClick={handleGuestLogin}
-                    className="nes-btn"
-                    style={{ width: '100%', marginBottom: '1rem', backgroundColor: '#666' }}
-                >
-                    ▶ Play as Guest
-                </button>
-
-                <hr style={{ margin: '1rem 0' }} />
-
                 <p style={{ textAlign: 'center', marginBottom: '0.5rem', fontSize: '12px' }}>Don't have an account?</p>
                 <Link to="/register" className="nes-btn is-success" style={{ display: 'block', textAlign: 'center', width: '100%' }}>
                     Register
                 </Link>
-            </div>
+
+                <hr style={{ margin: '1rem 0' }} />
+                 <button
+                    onClick={handleGuestLogin}
+                    className="nes-btn"
+                    style={{ width: '100%', marginBottom: '1rem', backgroundColor: '#666' }}
+                >
+                    ▶ Play As Guest
+                </button>
+
+           </div>
         </div>
     );
 }

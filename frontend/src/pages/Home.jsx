@@ -37,13 +37,13 @@ function Home() {
                             <li
                                 key={game.id}
                                 className="nes-container is-rounded with-title"
-                                style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', height: '100%' }}
+                                style={{ padding: '2rem 1.5rem 1.5rem', display: 'flex', flexDirection: 'column', height: '100%' }}
                             >
-                                <p className="title">{game.title}</p>
+                                <p className="title" style={{ fontSize: '21px', padding: '0rem'}}>{game.title}</p>
 
-                                <div style={{ marginBottom: '1rem', flexGrow: 1 }}>
+                                <div style={{ marginBottom: '0.2rem', flexGrow: 1 }}>
                                     <p>Players: {game.player_count}</p>
-                                    <p style={{ fontSize: '0.8rem', color: '#666' }}>{game.description?.substring(0, 50)}...</p>
+                                    <p style={{ fontSize: '0.8rem', color: '#666' }}>{game.description?.substring(0, 120)}</p>
                                 </div>
 
                                 <Link to={`/games/${slug}`} className="nes-btn is-primary" style={{ textAlign: 'center', width: '100%' }}>
