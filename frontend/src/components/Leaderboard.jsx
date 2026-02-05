@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useScores } from '../services/useQuery';
 import ax from '../services/ax';
 import conf from '../services/conf';
+import { COLORS, FONT_SIZE, SPACING } from '../styles/tokens';
+import { LEADERBOARD_MAX_ITEMS } from '../constants/validation';
 
 export default function Leaderboard({ gameId }) {
     const [data, setData] = useState([]);
@@ -52,7 +54,7 @@ export default function Leaderboard({ gameId }) {
                             user_id: message.data.user_id
                         });
                     }
-                    return updated.sort((a, b) => b.score - a.score).slice(0, 10);
+                    return updated.sort((a, b) => b.score - a.score).slice(0, LEADERBOARD_MAX_ITEMS);
                 });
             }
         };
@@ -62,7 +64,7 @@ export default function Leaderboard({ gameId }) {
 
     if (loading) {
         return (
-            <div style={{ padding: '2rem', textAlign: 'center' }}>
+            <div style={{ padding: SPACING.lg, textAlign: 'center' }}>
                 <p className="nes-text">Loading Scores...</p>
             </div>
         );
@@ -70,7 +72,7 @@ export default function Leaderboard({ gameId }) {
 
     if (data.length === 0) {
         return (
-            <div style={{ padding: '2rem', textAlign: 'center' }}>
+            <div style={{ padding: SPACING.lg, textAlign: 'center' }}>
                 <p className="nes-text">No scores available for this game</p>
             </div>
         );
@@ -79,15 +81,15 @@ export default function Leaderboard({ gameId }) {
     const rankLabel = (index) => `#${index + 1}`;
 
     const rankColor = (index) => {
-        if (index === 0) return '#FFD700'; // Gold
-        if (index === 1) return '#C0C0C0'; // Silver
-        if (index === 2) return '#CD7F32'; // Bronze
-        return '#999';
+        if (index === 0) return COLORS.gold;
+        if (index === 1) return COLORS.silver;
+        if (index === 2) return COLORS.bronze;
+        return COLORS.textLighter;
     };
 
     return (
-        <div style={{ padding: '1.5rem' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '16px' }}>
+        <div style={{ padding: SPACING.md }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: FONT_SIZE.md }}>
                 <tbody>
                     {data.map((row, index) => (
                         <tr
@@ -95,23 +97,23 @@ export default function Leaderboard({ gameId }) {
                             style={{ borderBottom: '2px solid #ccc', padding: '1rem 0' }}
                         >
                             {/* Rank */}
-                            <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', color: rankColor(index), fontSize: '18px' }}>
+                            <td style={{ padding: SPACING.sm, textAlign: 'center', fontWeight: 'bold', color: rankColor(index), fontSize: FONT_SIZE.lg }}>
                                 {rankLabel(index)}
                             </td>
 
                             {/* Username */}
-                            <td style={{ padding: '1rem' }}>
-                                <span style={{ fontWeight: 'bold', fontSize: '16px' }}>
+                            <td style={{ padding: SPACING.sm }}>
+                                <span style={{ fontWeight: 'bold', fontSize: FONT_SIZE.md }}>
                                     {row.username}
                                 </span>
                             </td>
 
                             {/* Score */}
-                            <td style={{ padding: '1rem', textAlign: 'right' }}>
-                                <span style={{ fontFamily: "'Press Start 2P', cursive", fontWeight: 'bold', color: '#FFD700', fontSize: '18px' }}>
+                            <td style={{ padding: SPACING.sm, textAlign: 'right' }}>
+                                <span style={{ fontFamily: "'Press Start 2P', cursive", fontWeight: 'bold', color: COLORS.gold, fontSize: FONT_SIZE.lg }}>
                                     {row.score}
                                 </span>
-                                <span style={{ marginLeft: '0.5rem', fontSize: '12px', fontFamily: "'Press Start 2P', cursive" }}>
+                                <span style={{ marginLeft: SPACING.xs, fontSize: FONT_SIZE.sm, fontFamily: "'Press Start 2P', cursive" }}>
                                     pts
                                 </span>
                             </td>

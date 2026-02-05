@@ -1,18 +1,19 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../services/useQuery';
+import { SPACING, FONT_SIZE, COLORS } from '../styles/tokens';
 
 const Navbar = () => {
     const { user, isGuest, logout } = useAuth();
 
     return (
         <nav style={{
-            borderBottom: '4px solid #000',
-            padding: '1rem 2rem',
-            marginBottom: '2rem',
+            borderBottom: `4px solid ${COLORS.black}`,
+            padding: `${SPACING.sm} ${SPACING.lg}`,
+            marginBottom: SPACING.lg,
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            backgroundColor: '#fff'
+            backgroundColor: COLORS.white
         }}>
             {/* Logo / Brand */}
             <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
@@ -22,7 +23,7 @@ const Navbar = () => {
             </Link>
 
             {/* User Info & Actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.md }}>
                 {/* แสดงชื่อ User */}
                 <div style={{ textAlign: 'right', lineHeight: '1.2' }}>
                     <span style={{ fontWeight: 'bold' }}>{user?.username || 'Guest'}</span>
@@ -30,7 +31,7 @@ const Navbar = () => {
 
                 {/* ปุ่ม Login/Register หรือ Logout */}
                 {isGuest ? (
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div style={{ display: 'flex', gap: SPACING.sm }}>
                         <Link to="/login" className="nes-btn is-primary">
                             Login
                         </Link>

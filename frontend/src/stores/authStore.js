@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import ax from '../services/ax';
 import conf from '../services/conf';
+import { createGuestUser } from '../utils/auth';
 
 const useAuthStore = create((set) => ({
     user: null,
@@ -8,9 +9,8 @@ const useAuthStore = create((set) => ({
     loading: true,
 
     loginAsGuest: () => {
-        const guestId = `guest_${Date.now()}`;
-        localStorage.setItem('guestId', guestId);
-        set({ user: { username: 'Guest', id: guestId }, isGuest: true });
+        const guestUser = createGuestUser();
+        set({ user: guestUser, isGuest: true });
     },
 
     login: async (username, password) => {
@@ -38,9 +38,8 @@ const useAuthStore = create((set) => ({
     logout: () => {
         localStorage.removeItem('token');
         // เมื่อ logout ให้กลับมาเป็น guest อัตโนมัติ
-        const guestId = `guest_${Date.now()}`;
-        localStorage.setItem('guestId', guestId);
-        set({ user: { username: 'Guest', id: guestId }, isGuest: true });
+        const guestUser = createGuestUser();
+        set({ user: guestUser, isGuest: true });
     },
 
     checkAuth: async () => {
@@ -54,25 +53,15 @@ const useAuthStore = create((set) => ({
             } catch {
                 localStorage.removeItem('token');
                 // ถ้า token หมดอายุ ให้กลับมาเป็น guest
-                const newGuestId = `guest_${Date.now()}`;
-                localStorage.setItem('guestId', newGuestId);
-                set({
-                    user: { username: 'Guest', id: newGuestId },
-                    isGuest: true,
-                    loading: false
-                });
+                const guestUser = createGuestUser();
+                set({ user: guestUser, isGuest: true, loading: false });
             }
         } else if (guestId) {
             set({ user: { username: 'Guest', id: guestId }, isGuest: true, loading: false });
         } else {
             // ถ้าไม่มีทั้ง token และ guestId ให้สร้าง guest ใหม่
-            const newGuestId = `guest_${Date.now()}`;
-            localStorage.setItem('guestId', newGuestId);
-            set({
-                user: { username: 'Guest', id: newGuestId },
-                isGuest: true,
-                loading: false
-            });
+            const guestUser = createGuestUser();
+            set({ user: guestUser, isGuest: true, loading: false });
         }
     }
 }));

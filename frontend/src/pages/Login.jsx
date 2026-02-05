@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
+import { SPACING, FONT_SIZE, CONTAINER, COLORS } from '../styles/tokens';
+import { fullPageCenter, formField, inputStyle, fullWidthButton, textCenter, smallText } from '../styles/mixins';
 
 function Login() {
     const [form, setForm] = useState({ username: '', password: '' });
@@ -31,18 +33,18 @@ function Login() {
     };
 
     return (
-        <div style={{ padding: '2rem', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div className="nes-container is-rounded" style={{ maxWidth: '400px', width: '100%' }}>
+        <div style={fullPageCenter}>
+            <div className="nes-container is-rounded" style={{ maxWidth: CONTAINER.form, width: '100%' }}>
                 <h2 className="title">Login</h2>
 
                 {error && (
-                    <div className="nes-container is-rounded is-error" style={{ marginBottom: '1rem' }}>
+                    <div className="nes-container is-rounded is-error" style={{ marginBottom: SPACING.md }}>
                         <p>{error}</p>
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit}>
-                    <div className="nes-field" style={{ marginBottom: '1rem' }}>
+                    <div className="nes-field" style={formField}>
                         <label htmlFor="username">Username</label>
                         <input
                             id="username"
@@ -51,11 +53,11 @@ function Login() {
                             placeholder="Enter your username"
                             value={form.username}
                             onChange={(e) => setForm({ ...form, username: e.target.value })}
-                            style={{ fontSize: '12px' }}
+                            style={inputStyle}
                             required
                         />
                     </div>
-                    <div className="nes-field" style={{ marginBottom: '1rem' }}>
+                    <div className="nes-field" style={formField}>
                         <label htmlFor="password">Password</label>
                         <input
                             id="password"
@@ -64,7 +66,7 @@ function Login() {
                             placeholder="Enter your password"
                             value={form.password}
                             onChange={(e) => setForm({ ...form, password: e.target.value })}
-                            style={{ fontSize: '12px' }}
+                            style={inputStyle}
                             required
                         />
                     </div>
@@ -72,28 +74,28 @@ function Login() {
                         type="submit"
                         disabled={loading}
                         className="nes-btn is-primary"
-                        style={{ width: '100%', marginBottom: '1rem' }}
+                        style={fullWidthButton}
                     >
                         {loading ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
 
-                <hr style={{ margin: '1rem 0' }} />
-                <p style={{ textAlign: 'center', marginBottom: '0.5rem', fontSize: '12px' }}>Don't have an account?</p>
-                <Link to="/register" className="nes-btn is-success" style={{ display: 'block', textAlign: 'center', width: '100%' }}>
+                <hr style={{ margin: `${SPACING.md} 0` }} />
+                <p style={{ ...textCenter, ...smallText, marginBottom: SPACING.xs }}>Don't have an account?</p>
+                <Link to="/register" className="nes-btn is-success" style={{ display: 'block', ...textCenter, ...fullWidthButton }}>
                     Register
                 </Link>
 
-                <hr style={{ margin: '1rem 0' }} />
-                 <button
+                <hr style={{ margin: `${SPACING.md} 0` }} />
+                <button
                     onClick={handleGuestLogin}
                     className="nes-btn"
-                    style={{ width: '100%', marginBottom: '1rem', backgroundColor: '#666' }}
+                    style={{ ...fullWidthButton, backgroundColor: COLORS.gray }}
                 >
                     ▶ Play As Guest
                 </button>
 
-           </div>
+            </div>
         </div>
     );
 }

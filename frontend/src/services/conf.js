@@ -1,6 +1,7 @@
 import api from "./ax";
 
-const API = 'http://localhost:8000' // เปลี่ยนเป็น URL จริงสำหรับ production
+// API URL from environment variable (configurable per environment)
+const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const conf = {
     urlApi: `${API}/api`,
