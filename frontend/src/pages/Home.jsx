@@ -1,15 +1,26 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useGames } from '../services/useQuery';
 import Navbar from "../components/Navbar";
 import { SPACING, FONT_SIZE, CONTAINER, COLORS } from '../styles/tokens';
 import { GAME_CARD_MIN_WIDTH } from '../constants/validation';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import ErrorMessage from '../components/ui/ErrorMessage';
 
 function Home() {
     const { games, loading, fetchGames } = useGames();
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetchGames();
+        const loadGames = async () => {
+            try {
+                await fetchGames();
+                setError(null);
+            } catch (err) {
+                setError('Failed to load games. Please try again.');
+            }
+        };
+        loadGames();
     }, [fetchGames]);
 
     return (
@@ -24,9 +35,19 @@ function Home() {
                     Available Games
                 </h2>
 
-                {loading && <p className="nes-text">Loading games...</p>}
+                {error && (
+                    <ErrorMessage
+                        message={error}
+                        onRetry={() => {
+                            setError(null);
+                            fetchGames();
+                        }}
+                    />
+                )}
 
-                {!loading && games.length === 0 && <p className="nes-text">No games found</p>}
+                {loading && <LoadingSpinner message="Loading games..." />}
+
+                {!loading && !error && games.length === 0 && <p className="nes-text">No games found</p>}
 
                 <ul style={{ listStyle: "none", padding: 0, display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${GAME_CARD_MIN_WIDTH}px, 1fr))`, gap: SPACING.md }}>
                     {games.map((game) => {

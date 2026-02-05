@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
-import { SPACING, FONT_SIZE, CONTAINER, COLORS } from '../styles/tokens';
-import { fullPageCenter, formField, inputStyle, fullWidthButton, textCenter, smallText } from '../styles/mixins';
+import { SPACING, COLORS } from '../styles/tokens';
+import { textCenter, smallText } from '../styles/mixins';
 import { PASSWORD_MIN_LENGTH } from '../constants/validation';
+import FormField from '../components/ui/FormField';
+import Button from '../components/ui/Button';
+import Container from '../components/ui/Container';
+import ErrorMessage from '../components/ui/ErrorMessage';
 
 function Register() {
   const [form, setForm] = useState({ username: '', password: '', confirmPassword: '' });
@@ -45,82 +49,69 @@ function Register() {
   };
 
   return (
-    <div style={fullPageCenter}>
-      <div className="nes-container is-rounded" style={{ maxWidth: CONTAINER.form, width: '100%' }}>
-        <h2 className="title">Register</h2>
+    <Container centered>
+      <h2 className="title">Register</h2>
 
-        {error && (
-          <div className="nes-container is-rounded is-error" style={{ marginBottom: SPACING.md }}>
-            <p>{error}</p>
-          </div>
-        )}
+      {error && <ErrorMessage message={error} />}
 
-        <form onSubmit={handleSubmit}>
-          <div className="nes-field" style={formField}>
-            <label htmlFor="username">Username</label>
-            <input
-              id="username"
-              type="text"
-              className="nes-input"
-              placeholder="Enter your username"
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
-              style={inputStyle}
-              required
-            />
-          </div>
-          <div className="nes-field" style={formField}>
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              className="nes-input"
-              placeholder="Enter your password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              style={inputStyle}
-              required
-            />
-          </div>
-          <div className="nes-field" style={formField}>
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              id="confirmPassword"
-              type="password"
-              className="nes-input"
-              placeholder="Confirm your password"
-              value={form.confirmPassword}
-              onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-              style={inputStyle}
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="nes-btn is-success"
-            style={fullWidthButton}
-          >
-            {loading ? 'Creating account...' : 'Register'}
-          </button>
-        </form>
+      <form onSubmit={handleSubmit}>
+        <FormField
+          label="Username"
+          id="username"
+          placeholder="Enter your username"
+          value={form.username}
+          onChange={(e) => setForm({ ...form, username: e.target.value })}
+          required
+        />
 
-        <hr style={{ margin: `${SPACING.md} 0` }} />
-        <p style={{ ...textCenter, ...smallText, marginBottom: SPACING.xs }}>Already have an account?</p>
-        <Link to="/login" className="nes-btn is-primary" style={{ display: 'block', ...textCenter, ...fullWidthButton }}>
-          Login
-        </Link>
+        <FormField
+          label="Password"
+          id="password"
+          type="password"
+          placeholder="Enter your password"
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          required
+        />
 
-        <hr style={{ margin: `${SPACING.md} 0` }} />
-        <button
-          onClick={handleGuestLogin}
-          className="nes-btn"
-          style={{ display: 'block', ...textCenter, ...fullWidthButton, backgroundColor: COLORS.gray }}
+        <FormField
+          label="Confirm Password"
+          id="confirmPassword"
+          type="password"
+          placeholder="Confirm your password"
+          value={form.confirmPassword}
+          onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+          required
+        />
+
+        <Button
+          type="submit"
+          variant="success"
+          loading={loading}
+          fullWidth
         >
-          ▶ Play As Guest
-        </button>
-      </div>
-    </div>
+          Register
+        </Button>
+      </form>
+
+      <hr style={{ margin: `${SPACING.md} 0` }} />
+      <p style={{ ...textCenter, ...smallText, marginBottom: SPACING.xs }}>
+        Already have an account?
+      </p>
+      <Link to="/login" className="nes-btn is-primary" style={{ display: 'block', ...textCenter, width: '100%', marginBottom: SPACING.md }}>
+        Login
+      </Link>
+
+      <hr style={{ margin: `${SPACING.md} 0` }} />
+      <Button
+        onClick={handleGuestLogin}
+        variant="default"
+        fullWidth
+        style={{ backgroundColor: COLORS.gray }}
+      >
+        ▶ Play As Guest
+      </Button>
+    </Container>
   );
 }
 

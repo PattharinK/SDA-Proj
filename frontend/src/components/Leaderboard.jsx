@@ -4,16 +4,27 @@ import ax from '../services/ax';
 import conf from '../services/conf';
 import { COLORS, FONT_SIZE, SPACING } from '../styles/tokens';
 import { LEADERBOARD_MAX_ITEMS } from '../constants/validation';
+import LoadingSpinner from './ui/LoadingSpinner';
+import ErrorMessage from './ui/ErrorMessage';
 
 export default function Leaderboard({ gameId }) {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     useEffect(() => {
         let ws;
 
         setLoading(true);
+        setError(null);
         ax.get(conf.leaderboard(gameId))
-            .then(res => setData(res.data))
+            .then(res => {
+                setData(res.data);
+                setError(null);
+            })
+            .catch(err => {
+                console.error('Failed to load leaderboard:', err);
+                setError('Failed to load leaderboard');
+            })
             .finally(() => setLoading(false));
 
         const token = localStorage.getItem("token");
@@ -59,14 +70,34 @@ export default function Leaderboard({ gameId }) {
             }
         };
 
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
         return () => ws?.close();
     }, [gameId]);
 
     if (loading) {
+        return <LoadingSpinner message="Loading Scores..." />;
+    }
+
+    if (error) {
         return (
-            <div style={{ padding: SPACING.lg, textAlign: 'center' }}>
-                <p className="nes-text">Loading Scores...</p>
-            </div>
+            <ErrorMessage
+                message={error}
+                onRetry={() => {
+                    setError(null);
+                    setLoading(true);
+                    ax.get(conf.leaderboard(gameId))
+                        .then(res => setData(res.data))
+                        .catch(err => setError('Failed to load leaderboard'))
+                        .finally(() => setLoading(false));
+                }}
+            />
         );
     }
 

@@ -1,0 +1,21 @@
+# Prettier ignore file
+# Files and directories to exclude from formatting
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
