@@ -44,10 +44,10 @@ const useGamesStore = create((set) => ({
                     : state.game,
             }));
 
-            // 2️ Update games list (optimistic update)
+
             set((state) => ({
                 games: state.games.map((g) =>
-                    g.id === id
+                    Number(g.id) === Number(id)
                         ? { ...g, player_count: newPlayerCount }
                         : g
                 ),
