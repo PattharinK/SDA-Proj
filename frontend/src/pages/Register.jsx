@@ -107,7 +107,7 @@ function Register() {
         onClick={handleGuestLogin}
         variant="default"
         fullWidth
-        style={{ backgroundColor: COLORS.gray }}
+        style={{ backgroundColor: COLORS.white, color: COLORS.black, display: 'block', ...textCenter, width: '100%', marginBottom: SPACING.md }}
       >
         ▶ Play As Guest
       </Button>
