@@ -1,7 +1,9 @@
 import api from "./ax";
 
 // API URL from environment variable (configurable per environment)
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// In production with Nginx proxy, use empty string to make relative requests to /api
+// In development, use localhost:8000
+const API = import.meta.env.VITE_API_URL || '';
 
 const conf = {
     urlApi: `${API}/api`,

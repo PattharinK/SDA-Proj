@@ -6,19 +6,19 @@ from app.api.auth import router as auth_router
 from app.api.scores import router as scores_router
 from app.api.games import router as games_router
 from app.init_db import init_db
+from app.config import settings
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
-app = FastAPI()
+app = FastAPI(title="SDA Game Platform API", version="1.0.0")
 
+# CORS Configuration from environment
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",  # Vite
-    ],
+    allow_origins=settings.get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

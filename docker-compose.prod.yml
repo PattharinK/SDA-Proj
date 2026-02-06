@@ -5,50 +5,75 @@ services:
         restart: always
         env_file:
             - .env
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         volumes:
             - mysql_data:/var/lib/mysql
-            - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-        ports:
-            - "3307:3306"
+            - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
         networks:
             - sda_network
+        healthcheck:
+            test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
 
     redis:
         image: redis:7-alpine
         container_name: sda_redis
         restart: always
-        ports:
-            - "6379:6379"
         networks:
             - sda_network
+        healthcheck:
+            test: [ "CMD", "redis-cli", "ping" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
     backend:
-        build: ./backend
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
         container_name: sda_backend
         restart: always
         env_file:
             - .env
+        environment:
+            DATABASE_URL: ${DATABASE_URL}
+            SECRET_KEY: ${SECRET_KEY}
+            REDIS_URL: ${REDIS_URL}
+            CORS_ORIGINS: ${CORS_ORIGINS}
+            ENVIRONMENT: production
         depends_on:
-            - mysql
-            - redis
+            mysql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
         networks:
             - sda_network
-        volumes:
-            - ./backend:/app
-        command: gunicorn app.main:app -k uvicorn.workers.UvicornWorker -w 2 -b 0.0.0.0:8000
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
 
     frontend:
-        build: ./frontend
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+            args:
+                VITE_API_URL: ${VITE_API_URL:-}
         container_name: sda_frontend
         restart: always
         depends_on:
             - backend
         networks:
             - sda_network
-        volumes:
-            - ./frontend:/app
-            - /app/node_modules
-        command: npm run dev -- --host
 
     nginx:
         image: nginx:alpine
@@ -56,26 +81,23 @@ services:
         restart: always
         ports:
             - "80:80"
+            - "443:443"
         volumes:
-            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - ./nginx/nginx.prod.conf:/etc/nginx/conf.d/default.conf:ro
         depends_on:
             - backend
             - frontend
         networks:
             - sda_network
-
-    k6:
-        image: grafana/k6
-        profiles: [ "test" ]
-        networks:
-            - sda_network
-        volumes:
-            - ./k6:/scripts
-        entrypoint: [ "k6" ]
+        healthcheck:
+            test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health" ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
 
 volumes:
     mysql_data:
-
+        driver: local
 
 networks:
     sda_network:
