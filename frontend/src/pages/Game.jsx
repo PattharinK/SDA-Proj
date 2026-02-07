@@ -95,7 +95,7 @@ function Game() {
 
                         {isGuest && (
                             <div style={{ marginTop: '1.5rem', padding: '0.5rem', border: '2px dashed white', borderRadius: '4px', fontSize: '10px', textAlign: 'center' }}>
-                                Guest scores are not saved.
+                                Guest scores will not be saved.
                             </div>
                         )}
                     </div>
