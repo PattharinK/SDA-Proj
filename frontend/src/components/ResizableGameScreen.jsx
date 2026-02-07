@@ -7,8 +7,6 @@ const MIN_WIDTH = 400;
 const MIN_HEIGHT = 225;
 
 // Fullscreen icons
-const ICON_ENTER_FULLSCREEN = '⛶';
-const ICON_EXIT_FULLSCREEN = '⊡';
 
 /**
  * ResizableGameScreen Component
@@ -228,7 +226,7 @@ function FullscreenButton({ isFullscreen, onClick }) {
             }}
             title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
         >
-            {isFullscreen ? ICON_EXIT_FULLSCREEN : ICON_ENTER_FULLSCREEN}
+            { isFullscreen ? "X" : "<>" }
         </button>
     );
 }

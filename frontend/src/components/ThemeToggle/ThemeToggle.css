@@ -1,0 +1,12 @@
+.pixel-icon {
+  width: 24px;  /* Adjust size as needed */
+  height: 24px;
+  
+  /* This prevents the "blurry" look on resize */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  
+  /* Ensures the icon sits nicely in the button */
+  display: block;
+  pointer-events: none; 
+}
