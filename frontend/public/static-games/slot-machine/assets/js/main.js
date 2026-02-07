@@ -36,14 +36,15 @@ class SlotMachine {
             let isStarted = false;
 
             // Listener: ถ้ารับ Event ว่าพร้อม
-            window.addEventListener('GameSDK_Ready', () => {
+            window.addEventListener('GameSDK_Ready', (e) => {
                 if (isStarted) return;
                 isStarted = true;
-                console.log('[System] ✅ SDK Ready Event received.');
+                this.userId = e.detail.userId || 'guest';
                 this.initializeGame();
             }, { once: true });
 
-            // Timeout: ถ้ารอนานเกิน 2 วิ (เพิ่มเป็น 5 วิ เพื่อทดสอบ)
+            console.log('[System] ⏳ Listening for SDK readiness...');
+
             setTimeout(() => {
                 if (!isStarted) {
                     console.warn('[System] SDK Timeout! Force starting as Guest (No Network Calls).');
@@ -55,7 +56,7 @@ class SlotMachine {
                     });
                     this.initializeGame();
                 }
-            }, 5000); // <-- เปลี่ยนจาก 2000 เป็น 5000 เพื่อให้เวลาโหลดมากขึ้น
+            }, 5000);
         }
     }
     getStorageKey() {
@@ -95,6 +96,7 @@ class SlotMachine {
             reel.style.transform = 'translateY(0px)';
         });
 
+
         // Check GameSDK
         if (!window.GameSDK) {
             console.error('%c[Init] ❌ GameSDK not found!', 'color: #FF0000; font-weight: bold');
@@ -109,19 +111,11 @@ class SlotMachine {
         try {
             console.log('[Init] 📥 Calling loadBestScore()...');
             this.bestBalance = await window.GameSDK.loadBestScore();
-            console.log(`[Init] 📊 Best balance from API: ${this.bestBalance}`);
+            console.log(`[Init] 📊 Best balance: ${this.bestBalance}`);
 
-            // Get userId
-            if (window.GameSDK.getUserId) {
-                this.userId = window.GameSDK.getUserId();
-                console.log(`[Init] 🆔 User ID from GameSDK: "${this.userId}"`);
-            } else {
-                console.warn('[Init] ⚠️ getUserId() not available in GameSDK!');
-            }
         } catch (error) {
-            console.error('[Init] ❌ Error:', error);
+            console.error('[Init] ❌ Error during SDK data load:', error);
         }
-
 
         // Show all localStorage
         console.group('[Init] 📋 All localStorage keys:');

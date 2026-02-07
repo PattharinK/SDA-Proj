@@ -45,7 +45,13 @@
 
             console.log(`SDK Init: Guest=${IS_GUEST}, CapturedID=${USER_ID}`);
 
-            window.dispatchEvent(new Event('GameSDK_Ready'));
+            window.dispatchEvent(new CustomEvent('GameSDK_Ready', {
+                detail: {
+                    userId: USER_ID,
+                    isGuest: IS_GUEST
+                }
+            }));
+
         }
     });
 
@@ -98,11 +104,8 @@
         },
 
         getUserId() {
-            // ถ้าเป็น Guest ให้ตอบ guest เลย
-            if (IS_GUEST) return 'guest';
-
-            // ถ้าไม่ใช่ Guest แต่หา ID ไม่เจอ ให้ตอบ guest (กัน error)
-            return USER_ID || 'guest';
+            if (USER_ID) return USER_ID;
+            return 'guest';
         }
     };
 })();
