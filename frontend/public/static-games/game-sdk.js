@@ -1,6 +1,4 @@
 (function () {
-    console.log("SDK VERSION: PROD-2026-02-07");
-
     const API_BASE = window.location.hostname === "localhost"
         ? "http://localhost:8000"
         : window.location.origin;
@@ -13,8 +11,6 @@
             GAME_ID = event.data.gameId;
             AUTH_TOKEN = event.data.token;
             IS_GUEST = event.data.isGuest || false;
-
-            console.log("Game initialized", GAME_ID, IS_GUEST ? "(Guest)" : "(User)");
         }
     });
 
@@ -33,7 +29,9 @@
                     game_id: GAME_ID,
                     score,
                 }),
-            }).catch(console.error);
+            }).catch(() => {
+                // Silently fail score submission in production
+            });
         },
 
         async loadBestScore() {

@@ -21,8 +21,7 @@ export default function Leaderboard({ gameId }) {
                 setData(res.data);
                 setError(null);
             })
-            .catch(err => {
-                console.error('Failed to load leaderboard:', err);
+            .catch(() => {
                 setError('Failed to load leaderboard');
             })
             .finally(() => setLoading(false));
@@ -38,17 +37,14 @@ export default function Leaderboard({ gameId }) {
                 `/api/scores/ws/leaderboard/${gameId}` +
                 `?token=${encodeURIComponent(token)}`;
 
-            console.log("Connecting to WS:", wsUrl);
             ws = new WebSocket(wsUrl);
         } catch (e) {
-            console.error('Failed to construct WebSocket URL', e);
+            // WebSocket connection failed, using REST API only
             return () => { };
         }
 
         ws.onmessage = (event) => {
             const message = JSON.parse(event.data);
-
-            console.log("WS message:", message);
             if (message.type === "initial") {
                 setData(message.data);
             } else if (message.type === "update") {
@@ -70,12 +66,12 @@ export default function Leaderboard({ gameId }) {
             }
         };
 
-        ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
+        ws.onerror = () => {
+            // WebSocket error, will continue using REST API
         };
 
         ws.onclose = () => {
-            console.log('WebSocket connection closed');
+            // WebSocket closed
         };
 
         return () => ws?.close();

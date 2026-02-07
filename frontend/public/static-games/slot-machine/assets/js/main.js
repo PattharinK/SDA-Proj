@@ -8,22 +8,47 @@ class SlotMachine {
             document.getElementById('reel4'),
             document.getElementById('reel5')
         ];
-        
+
         this.symbols = ['🍎', '🍌', '🍒', '🍊', '💎', '⭐'];
         this.balance = localStorage.getItem('slotBalance') ? parseInt(localStorage.getItem('slotBalance')) : 1000;
         this.currentBet = 50;
         this.isSpinning = false;
+        this.scoreSubmitted = false;
+        this.bestScore = 0;
         this.spinButton = document.getElementById('spin-btn');
         this.resultDisplay = document.getElementById('result');
         this.balanceDisplay = document.getElementById('balance');
         this.currentBetDisplay = document.getElementById('current-bet');
-        
+
         this.initializeGame();
     }
 
     initializeGame() {
+        this.loadBestScore();
         this.updateBalance();
         this.setupEventListeners();
+    }
+
+    async loadBestScore() {
+        // Wait for GameSDK to be available
+        const waitForSDK = () => {
+            if (!window.GameSDK?.loadBestScore) {
+                setTimeout(waitForSDK, 50);
+                return;
+            }
+
+            window.GameSDK.loadBestScore().then(score => {
+                this.bestScore = score;
+                // Show best score if greater than current balance
+                if (this.bestScore > this.balance) {
+                    const bestScoreEl = document.createElement('div');
+                    bestScoreEl.className = 'best-score-display';
+                    bestScoreEl.innerHTML = `<div style="text-align: center; margin-top: 10px; color: #ffd700; font-size: 14px;">🏆 Best Score: ${this.bestScore}</div>`;
+                    document.querySelector('.header').appendChild(bestScoreEl);
+                }
+            });
+        };
+        waitForSDK();
     }
 
     setupEventListeners() {
@@ -70,7 +95,7 @@ class SlotMachine {
         return new Promise(resolve => {
             const startTime = Date.now();
             const initialPosition = 0;
-            
+
             const animate = () => {
                 const elapsed = Date.now() - startTime;
                 const progress = elapsed / duration;
@@ -102,7 +127,7 @@ class SlotMachine {
 
     checkWin() {
         const results = this.reels.map(reel => this.getReelResult(reel));
-        
+
         let winAmount = 0;
         let winMessage = '';
 
@@ -144,11 +169,24 @@ class SlotMachine {
         }
 
         this.updateBalance();
+
+        // Submit score to backend if this is the best score
+        if (window.GameSDK && !this.scoreSubmitted && this.balance > this.bestScore) {
+            this.scoreSubmitted = true;
+            this.bestScore = this.balance;
+            window.GameSDK.submitScore(this.balance);
+        }
     }
 
     updateBalance() {
         this.balanceDisplay.textContent = this.balance;
         localStorage.setItem('slotBalance', this.balance);
+
+        // Submit score on each balance update if it's better than previous best
+        if (window.GameSDK && this.balance > this.bestScore) {
+            this.bestScore = this.balance;
+            window.GameSDK.submitScore(this.balance);
+        }
 
         if (this.balance === 0) {
             this.spinButton.disabled = true;
