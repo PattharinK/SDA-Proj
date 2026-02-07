@@ -30,12 +30,30 @@ export const COLORS = {
     silver: '#C0C0C0',
     bronze: '#CD7F32',
 
-    // Text colors
+    // Light mode colors
+    light: {
+        text: '#212529',
+        textLight: '#666',
+        textLighter: '#999',
+        background: '#fff',
+        inputBg: '#fff',
+        inputBorder: '#ccc'
+    },
+
+    // Dark mode colors
+    dark: {
+        text: '#e0e0e0',
+        textLight: '#999',
+        textLighter: '#666',
+        background: '#1a1a1a',
+        inputBg: '#333',
+        inputBorder: '#666'
+    },
+
+    // Legacy colors (for backward compatibility)
     text: '#212529',
     textLight: '#666',
     textLighter: '#999',
-
-    // Backgrounds
     white: '#fff',
     black: '#000',
     gray: '#666'
