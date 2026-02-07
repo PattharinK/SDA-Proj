@@ -226,7 +226,7 @@ function FullscreenButton({ isFullscreen, onClick }) {
             }}
             title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
         >
-            { isFullscreen ? "><" : "<>" }
+            { isFullscreen ? "X" : "<>" }
         </button>
     );
 }

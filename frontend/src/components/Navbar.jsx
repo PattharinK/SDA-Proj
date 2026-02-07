@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../services/useQuery';
 import { SPACING, FONT_SIZE, COLORS } from '../styles/tokens';
-import ThemeToggle from './ThemeToggle';
+import ThemeToggle from './ThemeToggle/ThemeToggle.jsx';
 
 const Navbar = () => {
     const { user, isGuest, logout } = useAuth();
@@ -25,8 +25,6 @@ const Navbar = () => {
 
             {/* User Info & Actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.md, flexWrap: 'wrap' }}>
-                {/* Theme Toggle */}
-                <ThemeToggle />
 
                 {/* แสดงชื่อ User */}
                 <div style={{ textAlign: 'right', lineHeight: '1.2' }}>
@@ -53,6 +51,10 @@ const Navbar = () => {
                         </button>
                     </div>
                 )}
+                {/* Theme Toggle */}
+                <div style={{ display: 'flex', gap: SPACING.sm, flexWrap: 'wrap'}}>
+                    <ThemeToggle />
+                </div>
             </div>
         </nav>
     );
