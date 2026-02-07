@@ -85,7 +85,7 @@ function Game() {
                         <div style={{ marginBottom: '1rem' }}>
                             <span style={{ color: '#4cc' }}>Description:</span>
                             <p style={{ fontSize: '12px', marginTop: '0.5rem' }}>
-                                {game.description || "ไม่มีคำอธิบาย"}
+                                {game.description || "No description available"}
                             </p>
                         </div>
 
