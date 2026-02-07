@@ -1,7 +1,9 @@
 (function () {
     console.log("SDK VERSION: PROD-2026-02-07");
 
-    const API_BASE = window.location.origin;
+    const API_BASE = window.location.hostname === "localhost"
+        ? "http://localhost:8000"
+        : window.location.origin;
     let GAME_ID = null;
     let AUTH_TOKEN = null;
     let IS_GUEST = false;

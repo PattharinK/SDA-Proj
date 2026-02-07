@@ -35,38 +35,37 @@ GameManager.prototype.isGameTerminated = function () {
 
 // Set up the game
 GameManager.prototype.setup = function () {
-  var previousState = this.storageManager.getGameState();
+  this.grid = new Grid(this.size);
+  this.score = 0;
+  this.over = false;
+  this.won = false;
+  this.keepPlaying = false;
 
-  // Reload the game from a previous game if present
-  if (previousState) {
-    this.grid = new Grid(previousState.grid.size,
-      previousState.grid.cells); // Reload grid
-    this.score = previousState.score;
-    this.over = previousState.over;
-    this.won = previousState.won;
-    this.keepPlaying = previousState.keepPlaying;
-  } else {
-    this.grid = new Grid(this.size);
-    this.score = 0;
-    this.over = false;
-    this.won = false;
-    this.keepPlaying = false;
+  this.addStartTiles();
 
+  const tryLoadScore = () => {
+    // SDK ยังไม่มา
+    if (!window.GameSDK?.loadBestScore) {
+      return setTimeout(tryLoadScore, 50);
+    }
 
-    // Add the initial tiles
-    this.addStartTiles();
-  }
+    this.storageManager.loadBestScoreOnce().then((score) => {
+      // ถ้าได้ 0 แปลว่า auth ยังไม่พร้อม → ลองใหม่
+      if (score === 0 && !this.storageManager.bestScoreLoaded) {
+        return setTimeout(tryLoadScore, 50);
+      }
 
-  // Update the actuator
-  this.actuate();
-
-  if (window.GameSDK && window.GAME_ID) {
-    GameSDK.loadBestScore(window.GAME_ID).then((best) => {
-      this.storageManager.setBestScore(best);
+      // โหลดสำเร็จแล้ว ค่อย render
       this.actuate();
     });
-  }
+  };
+
+  tryLoadScore();
 };
+
+
+
+
 
 // Set up the initial tiles to start the game with
 GameManager.prototype.addStartTiles = function () {

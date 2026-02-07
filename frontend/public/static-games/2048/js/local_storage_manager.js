@@ -1,63 +1,59 @@
-window.fakeStorage = {
-  _data: {},
-
-  setItem: function (id, val) {
-    return this._data[id] = String(val);
-  },
-
-  getItem: function (id) {
-    return this._data.hasOwnProperty(id) ? this._data[id] : undefined;
-  },
-
-  removeItem: function (id) {
-    return delete this._data[id];
-  },
-
-  clear: function () {
-    return this._data = {};
-  }
-};
-
 function LocalStorageManager() {
-  this.bestScoreKey     = "bestScore";
-  this.gameStateKey     = "gameState";
-
-  var supported = this.localStorageSupported();
-  this.storage = supported ? window.localStorage : window.fakeStorage;
+  this.bestScore = 0;
+  this.bestScoreLoaded = false;
+  this.loadingPromise = null; //กันยิงซ้ำ
 }
 
-LocalStorageManager.prototype.localStorageSupported = function () {
-  var testKey = "test";
+/**
+ * โหลดคะแนนจาก server (โหลดครั้งเดียว)
+ */
 
-  try {
-    var storage = window.localStorage;
-    storage.setItem(testKey, "1");
-    storage.removeItem(testKey);
-    return true;
-  } catch (error) {
-    return false;
-  }
+LocalStorageManager.prototype.loadBestScoreOnce = function () {
+  if (this.bestScoreLoaded) return Promise.resolve(this.bestScore);
+
+  // ถ้ากำลังรออยู่ ให้ใช้ promise เดิม
+  if (this.loadingPromise) return this.loadingPromise;
+
+  this.loadingPromise = new Promise(async (resolve) => {
+    // delay รอ SDK init
+    await new Promise(r => setTimeout(r, 500)); // 300–800ms กำลังดี
+
+    if (!window.GameSDK?.loadBestScore) {
+      this.bestScoreLoaded = true;
+      return resolve(this.bestScore);
+    }
+
+    const score = await window.GameSDK.loadBestScore();
+
+    this.bestScore = score;
+    this.bestScoreLoaded = true; // lock ไม่ว่าค่าอะไร
+
+    resolve(this.bestScore);
+  });
+
+  return this.loadingPromise;
 };
 
-// Best score getters/setters
+/**
+ * getter แบบ sync (ใช้ใน actuate)
+ */
 LocalStorageManager.prototype.getBestScore = function () {
-  return this.storage.getItem(this.bestScoreKey) || 0;
+  return this.bestScore;
 };
 
+/**
+ * submit เฉพาะตอน score สูงกว่า
+ */
 LocalStorageManager.prototype.setBestScore = function (score) {
-  this.storage.setItem(this.bestScoreKey, score);
-};
+  if (score > this.bestScore) {
+    this.bestScore = score;
 
-// Game state getters/setters and clearing
+  }
+}
+
+//  ปิด game state
 LocalStorageManager.prototype.getGameState = function () {
-  var stateJSON = this.storage.getItem(this.gameStateKey);
-  return stateJSON ? JSON.parse(stateJSON) : null;
+  return null;
 };
-
-LocalStorageManager.prototype.setGameState = function (gameState) {
-  this.storage.setItem(this.gameStateKey, JSON.stringify(gameState));
-};
-
-LocalStorageManager.prototype.clearGameState = function () {
-  this.storage.removeItem(this.gameStateKey);
-};
+LocalStorageManager.prototype.setGameState = function () { };
+LocalStorageManager.prototype.clearGameState = function () { };
