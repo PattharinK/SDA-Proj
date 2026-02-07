@@ -99,6 +99,7 @@ async def submit_score(
         score_changed = True
 
     await db.commit()
+    await db.refresh(leaderboard)
 
     if score_changed:
         channel = f"leaderboard:{body.game_id}"
@@ -144,6 +145,7 @@ async def leaderboard(
         .where(Leaderboard.game_id == game_id)
         .order_by(Leaderboard.best_score.desc())
         .limit(10)
+        .execution_options(populate_existing=True)
     )
 
     data = []
@@ -247,7 +249,7 @@ async def websocket_leaderboard(
         while True:
             message = await pubsub.get_message(
                 ignore_subscribe_messages=True,
-                timeout=1.0,
+                timeout=0.5,
             )
 
             if message and message["type"] == "message":

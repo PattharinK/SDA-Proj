@@ -1,12 +1,29 @@
 (function () {
-    console.log("SDK VERSION: PROD-2026-02-07");
+    console.log("SDK VERSION: DEBUG-PAYLOAD");
 
+    // ... ตัวแปรเดิม ...
     const API_BASE = window.location.hostname === "localhost"
         ? "http://localhost:8000"
         : window.location.origin;
     let GAME_ID = null;
     let AUTH_TOKEN = null;
     let IS_GUEST = false;
+    let USER_ID = null;
+    let IS_READY = false;
+
+    function parseJwt(token) {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch (e) {
+            console.error("Failed to parse JWT", e);
+            return null;
+        }
+    }
 
     window.addEventListener("message", (event) => {
         if (event.data?.type === "INIT_GAME") {
@@ -14,13 +31,32 @@
             AUTH_TOKEN = event.data.token;
             IS_GUEST = event.data.isGuest || false;
 
-            console.log("Game initialized", GAME_ID, IS_GUEST ? "(Guest)" : "(User)");
+            if (AUTH_TOKEN) {
+                const decoded = parseJwt(AUTH_TOKEN);
+                if (decoded && decoded.sub) {
+                    USER_ID = decoded.sub; // 'sub' ใน JWT คือ User ID
+                }
+            }
+
+            if (!USER_ID) {
+                USER_ID = event.data.userId || event.data.user_id || event.data.username;
+            }
+            IS_READY = true;
+
+            console.log(`SDK Init: Guest=${IS_GUEST}, CapturedID=${USER_ID}`);
+
+            window.dispatchEvent(new Event('GameSDK_Ready'));
         }
     });
 
     window.GameSDK = {
+
+        isReady() {
+            return IS_READY;
+        },
+
         submitScore(score) {
-            // Guest users don't submit scores
+            // ... โค้ดเดิม ...
             if (IS_GUEST || !GAME_ID || !AUTH_TOKEN) return;
 
             fetch(`${API_BASE}/api/scores/submit`, {
@@ -33,13 +69,15 @@
                     game_id: GAME_ID,
                     score,
                 }),
-            }).catch(console.error);
+            }).catch(() => {
+                // Silently fail score submission in production
+            });
         },
 
         async loadBestScore() {
-            // Guest users return 0
+            // ... โค้ดเดิม ...
             if (IS_GUEST) return 0;
-
+            // เพิ่มการรอเล็กน้อยถ้าเรียกเร็วไป (เผื่อไว้) แต่ logic หลักจะแก้ที่ฝั่งเกม
             if (!GAME_ID || !AUTH_TOKEN) return 0;
 
             try {
@@ -58,5 +96,13 @@
                 return 0;
             }
         },
+
+        getUserId() {
+            // ถ้าเป็น Guest ให้ตอบ guest เลย
+            if (IS_GUEST) return 'guest';
+
+            // ถ้าไม่ใช่ Guest แต่หา ID ไม่เจอ ให้ตอบ guest (กัน error)
+            return USER_ID || 'guest';
+        }
     };
 })();
