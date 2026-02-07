@@ -158,6 +158,28 @@ class SlotMachine {
         this.setupEventListeners();
     }
 
+    async loadBestScore() {
+        // Wait for GameSDK to be available
+        const waitForSDK = () => {
+            if (!window.GameSDK?.loadBestScore) {
+                setTimeout(waitForSDK, 50);
+                return;
+            }
+
+            window.GameSDK.loadBestScore().then(score => {
+                this.bestScore = score;
+                // Show best score if greater than current balance
+                if (this.bestScore > this.balance) {
+                    const bestScoreEl = document.createElement('div');
+                    bestScoreEl.className = 'best-score-display';
+                    bestScoreEl.innerHTML = `<div style="text-align: center; margin-top: 10px; color: #ffd700; font-size: 14px;">🏆 Best Score: ${this.bestScore}</div>`;
+                    document.querySelector('.header').appendChild(bestScoreEl);
+                }
+            });
+        };
+        waitForSDK();
+    }
+
     setupEventListeners() {
         this.spinButton.addEventListener('click', () => this.spin());
 
