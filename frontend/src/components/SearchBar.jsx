@@ -1,5 +1,6 @@
-import { SPACING, FONT_SIZE } from '../styles/tokens';
-import { inputStyle } from '../styles/mixins';
+import { SPACING } from '../styles/tokens';
+import { getSearchInputStyle } from '../styles/mixins';
+import { useTheme } from '../contexts/ThemeContext';
 
 /**
  * Search Bar Component
@@ -11,6 +12,8 @@ import { inputStyle } from '../styles/mixins';
  * @param {string} placeholder - Placeholder text
  */
 export default function SearchBar({ value, onChange, placeholder = 'Search...' }) {
+    const { isDark } = useTheme();
+
     return (
         <div className="nes-field" style={{ marginBottom: SPACING.md }}>
             <input
@@ -19,7 +22,7 @@ export default function SearchBar({ value, onChange, placeholder = 'Search...' }
                 placeholder={placeholder}
                 value={value}
                 onChange={onChange}
-                style={inputStyle}
+                style={getSearchInputStyle(isDark)}
             />
         </div>
     );
