@@ -8,6 +8,7 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import ErrorMessage from '../components/ui/ErrorMessage';
 import RecentlyPlayed from '../components/RecentlyPlayed';
 import { useSearch } from '../contexts/SearchContext';
+import { GridIcon, ListIcon } from '../components/LayoutIcons';
 
 function Home() {
     const { games, loading, fetchGames } = useGames();
@@ -71,10 +72,17 @@ function Home() {
                             setLayout(newLayout);
                             localStorage.setItem('gamesLayout', newLayout);
                         }}
-                        style={{ minWidth: '50px', fontSize: '1.2rem' }}
+                        style={{
+                            minWidth: '50px',
+                            height: '48px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '8px 12px'
+                        }}
                         title={layout === 'grid' ? 'Switch to List View' : 'Switch to Grid View'}
                     >
-                        {layout === 'grid' ? '☰' : '⊞'}
+                        {layout === 'grid' ? <ListIcon /> : <GridIcon />}
                     </button>
                 </div>
 
