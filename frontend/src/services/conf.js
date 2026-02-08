@@ -24,6 +24,9 @@ const conf = {
     // ระบบ Scores
     submitScore: `${API}/api/scores/submit`,
     leaderboard: (gameId) => `${API}/api/scores/leaderboard/${gameId}`,
+
+    // ระบบโปรไฟล์ผู้ใช้
+    userProfile: `${API}/api/auth/profile`,
 };
 
 export default conf;

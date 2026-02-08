@@ -6,6 +6,8 @@ import Container from '../components/ui/Container';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Button from '../components/ui/Button';
 import { SPACING, FONT_SIZE, COLORS, CONTAINER as CONTAINER_SIZES } from '../styles/tokens';
+import conf from '../services/conf';
+import ax from '../services/ax';
 
 /**
  * Profile Page
@@ -30,22 +32,12 @@ export default function Profile() {
         // Fetch user profile from API
         const fetchProfile = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch profile');
-                }
-
-                const data = await response.json();
-                setProfileData(data);
+                const response = await ax.get(conf.userProfile);
+                setProfileData(response.data);
             } catch (err) {
                 console.error('Error fetching profile:', err);
-                setError(err.message);
+
+                setError(err.response?.data?.message || err.message || 'Failed to fetch profile');
             } finally {
                 setLoading(false);
             }
