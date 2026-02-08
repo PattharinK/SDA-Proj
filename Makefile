@@ -78,7 +78,7 @@ restart-backend:
 # ================================
 
 seed:
-	docker-compose -f docker-compose.dev.yml run --rm sda_backend python -m app.seed
+	docker compose -f docker-compose.dev.yml run --rm sda_backend python -m app.seed
 	@echo "Database seeded!"
 
 clean:
@@ -152,18 +152,15 @@ rebuild-frontend:
 .PHONY: prod-build prod-up prod-down prod-logs prod-restart prod-clean
 
 prod-build:
-	docker-compose -f docker-compose.prod.yml build
+	docker compose -f docker-compose.prod.yml build
 	@echo "Production images built successfully!"
 
 prod-up:
-	docker-compose -f docker-compose.prod.yml up -d
+	docker compose -f docker-compose.prod.yml up -d --scale backend=3
 	@echo "Production services started!"
-	@echo "Access: http://localhost"
-	@echo "API Health: http://localhost/health"
-	@echo "Check logs with: make prod-logs"
 
 prod-down:
-	docker-compose -f docker-compose.prod.yml down
+	docker compose -f docker-compose.prod.yml down
 	@echo "Production services stopped"
 
 prod-logs:
@@ -191,29 +188,26 @@ prod-status:
 .PHONY: prod-build prod-up prod-down prod-logs prod-restart prod-clean
 
 prod-build:
-	docker-compose -f docker-compose.prod.yml build
+	docker compose -f docker-compose.prod.yml build
 	@echo "Production images built successfully!"
 
 prod-up:
-	docker-compose -f docker-compose.prod.yml up -d
+	docker compose -f docker-compose.prod.yml up -d --scale backend=3
 	@echo "Production services started!"
-	@echo "Access: http://localhost"
-	@echo "API Health: http://localhost/health"
-	@echo "Check logs with: make prod-logs"
-
+	
 prod-down:
-	docker-compose -f docker-compose.prod.yml down
+	docker compose -f docker-compose.prod.yml down
 	@echo "Production services stopped"
 
 prod-logs:
-	docker-compose -f docker-compose.prod.yml logs -f --tail=50
+	docker compose -f docker-compose.prod.yml logs -f --tail=50
 
 prod-restart:
-	docker-compose -f docker-compose.prod.yml restart
+	docker compose -f docker-compose.prod.yml restart
 	@echo "Production services restarted"
 
 prod-clean:
-	docker-compose -f docker-compose.prod.yml down -v --remove-orphans
+	docker compose -f docker-compose.prod.yml down -v --remove-orphans
 	@echo "Production containers and volumes removed!"
 
 prod-status:
