@@ -1,11 +1,22 @@
 GAMES_SEED = [
-    {"title": "Flappy", "description": "Classic flappy bird game"},
     {
         "title": "2048",
-        "description": "single-player sliding tile puzzle game where players merge numbered tiles on a 4x4 grid by swiping in four directions",
+        "description": "Join the numbers and get to the 2048 tile!",
+        "thumbnail_url": "/static-games/2048/meta/apple-touch-icon.png",
+    },
+    {
+        "title": "Flappy",  # Keep original name "Flappy" not "Flappy Bird"
+        "description": "Navigate the bird through obstacles",
+        "thumbnail_url": "/static-games/flappy/assets/favicon.png",
     },
     {
         "title": "Slot Machine",
-        "description": "Spin the reels and match symbols to win big! Features 5 reels, adjustable bets, and diamond jackpots.",
+        "description": "Try your luck with the slot machine!",
+        "thumbnail_url": "/static-games/slot-machine/images/favicon.png",
+    },
+    {
+        "title": "Hextris",
+        "description": "A fast paced hexagonal puzzle game inspired by Tetris",
+        "thumbnail_url": "/static-games/hextris/favicon.ico",
     },
 ]

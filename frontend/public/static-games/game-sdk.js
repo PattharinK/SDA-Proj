@@ -27,6 +27,28 @@
 
     window.addEventListener("message", (event) => {
         if (event.data?.type === "INIT_GAME") {
+            // 🔒 Security: Only accept messages from parent window
+            if (event.source !== window.parent) {
+                console.warn('[SDK] Rejected INIT_GAME: not from parent window');
+                return;
+            }
+
+            // 🔒 Protection: Prevent re-initialization with different game ID
+            if (IS_READY && GAME_ID !== null && GAME_ID !== event.data.gameId) {
+                console.warn(
+                    `[SDK] ⚠️ Rejected re-initialization attempt!\n` +
+                    `Current Game ID: ${GAME_ID}\n` +
+                    `Attempted Game ID: ${event.data.gameId}\n` +
+                    `This prevents cross-game contamination.`
+                );
+                return;
+            }
+
+            // Allow re-initialization with SAME game ID (e.g., page refresh)
+            if (IS_READY && GAME_ID === event.data.gameId) {
+                console.log(`[SDK] ℹ️ Re-initialization with same game ID ${GAME_ID} (allowed)`);
+            }
+
             GAME_ID = event.data.gameId;
             AUTH_TOKEN = event.data.token;
             IS_GUEST = event.data.isGuest || false;

@@ -1,140 +1,139 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Slot Machine Game</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="assets/css/main.css" />
-  </head>
-  <body>
-    <div class="slot-machine">
-      <div class="header">
-        <h1>SLOT MACHINE</h1>
-        <div class="balance">
-          <span>Balance:</span>
-          <span id="balance" class="balance-amount">1000</span>
-        </div>
-      </div>
 
-      <div class="game-container">
-        <div class="reels-container">
-          <div class="reel-wrapper">
-            <div class="reel" id="reel1">
-              <div class="symbol">🍎</div>
-              <div class="symbol">🍌</div>
-              <div class="symbol">🍒</div>
-              <div class="symbol">🍊</div>
-              <div class="symbol">💎</div>
-              <div class="symbol">⭐</div>
-              <div class="symbol">🍎</div>
-              <div class="symbol">🍌</div>
-            </div>
-          </div>
-          <div class="reel-wrapper">
-            <div class="reel" id="reel2">
-              <div class="symbol">🍎</div>
-              <div class="symbol">🍌</div>
-              <div class="symbol">🍒</div>
-              <div class="symbol">🍊</div>
-              <div class="symbol">💎</div>
-              <div class="symbol">⭐</div>
-              <div class="symbol">🍎</div>
-              <div class="symbol">🍌</div>
-            </div>
-          </div>
-          <div class="reel-wrapper">
-            <div class="reel" id="reel3">
-              <div class="symbol">🍎</div>
-              <div class="symbol">🍌</div>
-              <div class="symbol">🍒</div>
-              <div class="symbol">🍊</div>
-              <div class="symbol">💎</div>
-              <div class="symbol">⭐</div>
-              <div class="symbol">🍎</div>
-              <div class="symbol">🍌</div>
-            </div>
-          </div>
-          <div class="reel-wrapper">
-            <div class="reel" id="reel4">
-              <div class="symbol">🍎</div>
-              <div class="symbol">🍌</div>
-              <div class="symbol">🍒</div>
-              <div class="symbol">🍊</div>
-              <div class="symbol">💎</div>
-              <div class="symbol">⭐</div>
-              <div class="symbol">🍎</div>
-              <div class="symbol">🍌</div>
-            </div>
-          </div>
-          <div class="reel-wrapper">
-            <div class="reel" id="reel5">
-              <div class="symbol">🍎</div>
-              <div class="symbol">🍌</div>
-              <div class="symbol">🍒</div>
-              <div class="symbol">🍊</div>
-              <div class="symbol">💎</div>
-              <div class="symbol">⭐</div>
-              <div class="symbol">🍎</div>
-              <div class="symbol">🍌</div>
-            </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slot Machine Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+
+<body>
+  <div class="slot-machine">
+    <div class="header">
+      <h1>SLOT MACHINE</h1>
+      <div class="balance">
+        <span>Balance:</span>
+        <span id="balance" class="balance-amount">1000</span>
+      </div>
+    </div>
+
+    <div class="game-container">
+      <div class="reels-container">
+        <div class="reel-wrapper">
+          <div class="reel" id="reel1">
+            <div class="symbol">🍎</div>
+            <div class="symbol">🍌</div>
+            <div class="symbol">🍒</div>
+            <div class="symbol">🍊</div>
+            <div class="symbol">💎</div>
+            <div class="symbol">⭐</div>
+            <div class="symbol">🍎</div>
+            <div class="symbol">🍌</div>
           </div>
         </div>
-      </div>
-
-      <div class="info-section">
-        <div class="bet-controls">
-          <label>Bet Amount:</label>
-          <div class="bet-buttons">
-            <button class="bet-btn" data-bet="10">10</button>
-            <button class="bet-btn" data-bet="25">25</button>
-            <button class="bet-btn active" data-bet="50">50</button>
-            <button class="bet-btn" data-bet="100">100</button>
+        <div class="reel-wrapper">
+          <div class="reel" id="reel2">
+            <div class="symbol">🍎</div>
+            <div class="symbol">🍌</div>
+            <div class="symbol">🍒</div>
+            <div class="symbol">🍊</div>
+            <div class="symbol">💎</div>
+            <div class="symbol">⭐</div>
+            <div class="symbol">🍎</div>
+            <div class="symbol">🍌</div>
           </div>
-          <span>Current Bet: <span id="current-bet">50</span></span>
         </div>
-
-        <button id="spin-btn" class="spin-button">SPIN</button>
-
-        <div class="result" id="result"></div>
-      </div>
-
-      <div class="paytable">
-        <h3>PAYTABLE</h3>
-        <div class="paytable-grid">
-          <div class="pay-item">
-            <span>🍎🍎🍎</span>
-            <span>5x</span>
+        <div class="reel-wrapper">
+          <div class="reel" id="reel3">
+            <div class="symbol">🍎</div>
+            <div class="symbol">🍌</div>
+            <div class="symbol">🍒</div>
+            <div class="symbol">🍊</div>
+            <div class="symbol">💎</div>
+            <div class="symbol">⭐</div>
+            <div class="symbol">🍎</div>
+            <div class="symbol">🍌</div>
           </div>
-          <div class="pay-item">
-            <span>🍌🍌🍌</span>
-            <span>10x</span>
+        </div>
+        <div class="reel-wrapper">
+          <div class="reel" id="reel4">
+            <div class="symbol">🍎</div>
+            <div class="symbol">🍌</div>
+            <div class="symbol">🍒</div>
+            <div class="symbol">🍊</div>
+            <div class="symbol">💎</div>
+            <div class="symbol">⭐</div>
+            <div class="symbol">🍎</div>
+            <div class="symbol">🍌</div>
           </div>
-          <div class="pay-item">
-            <span>🍒🍒🍒</span>
-            <span>15x</span>
-          </div>
-          <div class="pay-item">
-            <span>💎💎💎</span>
-            <span>100x</span>
-          </div>
-          <div class="pay-item">
-            <span>⭐⭐⭐</span>
-            <span>50x</span>
-          </div>
-          <div class="pay-item">
-            <span style="font-size: 16px">Any 3 in a row</span>
-            <span>2x</span>
+        </div>
+        <div class="reel-wrapper">
+          <div class="reel" id="reel5">
+            <div class="symbol">🍎</div>
+            <div class="symbol">🍌</div>
+            <div class="symbol">🍒</div>
+            <div class="symbol">🍊</div>
+            <div class="symbol">💎</div>
+            <div class="symbol">⭐</div>
+            <div class="symbol">🍎</div>
+            <div class="symbol">🍌</div>
           </div>
         </div>
       </div>
     </div>
 
-    <script src="../game-sdk.js?v=20260207"></script>
-    <script src="assets/js/main.js"></script>
-    <script src="../game-sdk.js?v=20260207"></script>
-  </body>
+    <div class="info-section">
+      <div class="bet-controls">
+        <label>Bet Amount:</label>
+        <div class="bet-buttons">
+          <button class="bet-btn" data-bet="10">10</button>
+          <button class="bet-btn" data-bet="25">25</button>
+          <button class="bet-btn active" data-bet="50">50</button>
+          <button class="bet-btn" data-bet="100">100</button>
+        </div>
+        <span>Current Bet: <span id="current-bet">50</span></span>
+      </div>
+
+      <button id="spin-btn" class="spin-button">SPIN</button>
+
+      <div class="result" id="result"></div>
+    </div>
+
+    <div class="paytable">
+      <h3>PAYTABLE</h3>
+      <div class="paytable-grid">
+        <div class="pay-item">
+          <span>🍎🍎🍎</span>
+          <span>5x</span>
+        </div>
+        <div class="pay-item">
+          <span>🍌🍌🍌</span>
+          <span>10x</span>
+        </div>
+        <div class="pay-item">
+          <span>🍒🍒🍒</span>
+          <span>15x</span>
+        </div>
+        <div class="pay-item">
+          <span>💎💎💎</span>
+          <span>100x</span>
+        </div>
+        <div class="pay-item">
+          <span>⭐⭐⭐</span>
+          <span>50x</span>
+        </div>
+        <div class="pay-item">
+          <span style="font-size: 16px">Any 3 in a row</span>
+          <span>2x</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../game-sdk.js?v=20260207"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+
 </html>
