@@ -22,6 +22,6 @@ GAMES_SEED = [
     {
         "title": "Sudoku",
         "description": "Classic logic puzzle - fill the grid with numbers 1-9",
-        "thumbnail_url": "/static-games/sudoku/demo/assets/ico/favicon.ico",
+        "thumbnail_url": "/static-games/sudoku/favicon.ico",
     },
 ]
