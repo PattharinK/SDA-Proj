@@ -123,9 +123,9 @@ export default function Profile() {
                                     </div>
                                 ) : (
                                     <div className="nes-container is-rounded" style={{ textAlign: 'center', padding: SPACING.lg }}>
-                                        <p style={{ color: COLORS.textLight }}>ยังไม่มีคะแนนในเกม</p>
+                                        <p style={{ color: COLORS.textLight }}>No game scores yet</p>
                                         <p style={{ fontSize: FONT_SIZE.sm, color: COLORS.textLight }}>
-                                            ลองเล่นเกมแล้วทำคะแนนสักหน่อยสิ!
+                                            Play some games and set your high scores!
                                         </p>
                                     </div>
                                 )}
