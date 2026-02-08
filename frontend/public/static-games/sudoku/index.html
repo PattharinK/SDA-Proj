@@ -59,7 +59,7 @@
 
         // Wait for SDK to be ready
         window.addEventListener('GameSDK_Ready', async (e) => {
-            console.log('GameSDK Ready:', e.detail);
+            // console.log('GameSDK Ready:', e.detail);
             await loadBestScore();
         });
 
@@ -240,7 +240,7 @@
             // Submit score to backend
             if (window.GameSDK && window.GameSDK.isReady()) {
                 window.GameSDK.submitScore(score);
-                console.log('Score submitted:', score, 'Time:', elapsed);
+                // console.log('Score submitted:', score, 'Time:', elapsed);
             }
 
             // Disable all cells

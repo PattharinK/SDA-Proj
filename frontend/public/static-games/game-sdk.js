@@ -65,7 +65,7 @@
             }
             IS_READY = true;
 
-            console.log(`SDK Init: Guest=${IS_GUEST}, CapturedID=${USER_ID}`);
+            // console.log(`SDK Init: Guest=${IS_GUEST}, CapturedID=${USER_ID}`);
 
             window.dispatchEvent(new CustomEvent('GameSDK_Ready', {
                 detail: {

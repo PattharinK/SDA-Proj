@@ -20,16 +20,16 @@ class SlotMachine {
         this.balanceDisplay = document.getElementById('balance');
         this.currentBetDisplay = document.getElementById('current-bet');
         this.waitForSDK();
-        console.log('%c🎰 SLOT MACHINE STARTING...', 'color: #FFD700; font-size: 16px; font-weight: bold');
+        // console.log('%c🎰 SLOT MACHINE STARTING...', 'color: #FFD700; font-size: 16px; font-weight: bold');
 
     }
 
     waitForSDK() {
-        console.log('[System] Waiting for SDK...');
+        // console.log('[System] Waiting for SDK...');
 
         // 1. ถ้าพร้อมอยู่แล้ว
         if (window.GameSDK && window.GameSDK.isReady && window.GameSDK.isReady()) {
-            console.log('[System] ✅ SDK was ready instantly.');
+            // console.log('[System] ✅ SDK was ready instantly.');
             this.initializeGame();
         } else {
             // 2. ถ้ายังไม่พร้อม ให้รอ
@@ -43,7 +43,7 @@ class SlotMachine {
                 this.initializeGame();
             }, { once: true });
 
-            console.log('[System] ⏳ Listening for SDK readiness...');
+            // console.log('[System] ⏳ Listening for SDK readiness...');
 
             setTimeout(() => {
                 if (!isStarted) {
@@ -61,7 +61,7 @@ class SlotMachine {
     }
     getStorageKey() {
         const key = `slotBalance_${this.userId}`;
-        console.log(`[Storage] Generated key: "${key}"`);
+        // console.log(`[Storage] Generated key: "${key}"`);
         return key;
     }
 
@@ -85,11 +85,11 @@ class SlotMachine {
                 });
             }
         });
-        console.log('[System] Reels populated with extended symbols.');
+        // console.log('[System] Reels populated with extended symbols.');
     }
 
     async initializeGame() {
-        console.log('%c[Init] 🎯 Starting initialization...', 'color: #00BFFF; font-weight: bold');
+        // console.log('%c[Init] 🎯 Starting initialization...', 'color: #00BFFF; font-weight: bold');
 
         this.populateReels();
         this.reels.forEach(reel => {
@@ -105,48 +105,48 @@ class SlotMachine {
             return;
         }
 
-        console.log('[Init] ✅ GameSDK found');
+        // console.log('[Init] ✅ GameSDK found');
 
         // Load best score
         try {
-            console.log('[Init] 📥 Calling loadBestScore()...');
+            // console.log('[Init] 📥 Calling loadBestScore()...');
             this.bestBalance = await window.GameSDK.loadBestScore();
-            console.log(`[Init] 📊 Best balance: ${this.bestBalance}`);
+            // console.log(`[Init] 📊 Best balance: ${this.bestBalance}`);
 
         } catch (error) {
             console.error('[Init] ❌ Error during SDK data load:', error);
         }
 
         // Show all localStorage
-        console.group('[Init] 📋 All localStorage keys:');
+        /* console.group('[Init] 📋 All localStorage keys:');
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (key && key.startsWith('slotBalance')) {
                 console.log(`  ${key} = ${localStorage.getItem(key)}`);
             }
         }
-        console.groupEnd();
+        console.groupEnd(); */
 
         // Load session balance
         const storageKey = this.getStorageKey();
         const sessionBalance = localStorage.getItem(storageKey);
 
-        console.log(`[Init] 💾 localStorage key: "${storageKey}"`);
-        console.log(`[Init] 💾 Session balance: ${sessionBalance}`);
+        // console.log(`[Init] 💾 localStorage key: "${storageKey}"`);
+        // console.log(`[Init] 💾 Session balance: ${sessionBalance}`);
 
         if (sessionBalance !== null) {
             // ถ้าเคยมีประวัติการเล่น (ต่อให้เป็น 0) ให้ใช้ค่าจาก storage นั้นเลย
             this.balance = parseInt(sessionBalance);
-            console.log(`[Init] 💰 Returning Player: Using session balance = ${this.balance}`);
+            // console.log(`[Init] 💰 Returning Player: Using session balance = ${this.balance}`);
         } else {
             // ถ้าเป็นผู้เล่นใหม่ซิงๆ (ไม่มี storage) ให้เริ่มที่ 1000 
             // หรือถ้าเขาเคยมี Best Score สูงกว่า (เช่น ย้ายเครื่องมา) ก็อนุโลมให้ใช้ Best Score ได้
             this.balance = Math.max(1000, this.bestBalance);
-            console.log(`[Init] 💰 New Player: Starting balance = ${this.balance}`);
+            // console.log(`[Init] 💰 New Player: Starting balance = ${this.balance}`);
         }
 
-        console.log('%c[Init] ✅ Complete!', 'color: #00FF00; font-weight: bold');
-        console.log(`[Init] Final - Balance: ${this.balance}, Best: ${this.bestBalance}, UserID: ${this.userId}`);
+        // console.log('%c[Init] ✅ Complete!', 'color: #00FF00; font-weight: bold');
+        // console.log(`[Init] Final - Balance: ${this.balance}, Best: ${this.bestBalance}, UserID: ${this.userId}`);
 
         this.updateBalance();
         this.setupEventListeners();
@@ -315,7 +315,7 @@ class SlotMachine {
             this.balance += winAmount;
             this.resultDisplay.textContent = `${winMessage} +${winAmount}!`;
             this.resultDisplay.className = 'result win';
-            console.log(`%c[Win] 🎉 +${winAmount} Balance: ${this.balance}`, 'color: #00FF00');
+            // console.log(`%c[Win] 🎉 +${winAmount} Balance: ${this.balance}`, 'color: #00FF00');
         } else {
             this.resultDisplay.textContent = 'NO MATCH - TRY AGAIN';
             this.resultDisplay.className = 'result lose';
@@ -351,10 +351,10 @@ class SlotMachine {
     }
 
     saveProgress() {
-        console.log(`[Save] Check: Balance=${this.balance}, Best=${this.bestBalance}`);
+        // console.log(`[Save] Check: Balance=${this.balance}, Best=${this.bestBalance}`);
 
         if (window.GameSDK && this.balance > this.bestBalance) {
-            console.log(`%c[Save] 🏆 NEW HIGH! Submitting ${this.balance}`, 'color: #FFD700');
+            // console.log(`%c[Save] 🏆 NEW HIGH! Submitting ${this.balance}`, 'color: #FFD700');
             window.GameSDK.submitScore(this.balance);
             this.bestBalance = this.balance;
         }
