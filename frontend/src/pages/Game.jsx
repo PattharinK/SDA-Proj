@@ -4,6 +4,7 @@ import Leaderboard from "../components/Leaderboard";
 import ResizableGameScreen from "../components/ResizableGameScreen";
 import { useAuth, useGames } from '../services/useQuery';
 import useGamesStore from '../stores/gamesStore';
+import { addRecentGame } from '../utils/recentGames';
 import Navbar from "../components/Navbar";
 
 function Game() {
@@ -26,6 +27,16 @@ function Game() {
 
                 // Get the freshly fetched game from store
                 const { game: currentGame } = useGamesStore.getState();
+
+                // Add to recently played (for all users, including guests)
+                if (currentGame) {
+                    addRecentGame({
+                        id: currentGame.id,
+                        title: currentGame.title,
+                        slug: gameSlug,
+                        thumbnail: currentGame.thumbnail || null
+                    });
+                }
 
                 // Safety checks
                 if (!currentGame || isGuest) return;

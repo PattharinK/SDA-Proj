@@ -7,6 +7,7 @@ import { GAME_CARD_MIN_WIDTH } from '../constants/validation';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import ErrorMessage from '../components/ui/ErrorMessage';
 import SearchBar from '../components/SearchBar';
+import RecentlyPlayed from '../components/RecentlyPlayed';
 
 function Home() {
     const { games, loading, fetchGames } = useGames();
@@ -43,6 +44,9 @@ function Home() {
             <div className="nes-container" style={{ padding: SPACING.lg, maxWidth: CONTAINER.content, margin: '0 auto' }}>
 
                 {/* ลบ Header เดิมออก และเหลือไว้แค่ส่วน Content */}
+
+                {/* Recently Played Section */}
+                <RecentlyPlayed />
 
                 <h2 style={{ fontSize: FONT_SIZE.xl, marginBottom: SPACING.md, borderLeft: "4px solid black", paddingLeft: "10px" }}>
                     Available Games
