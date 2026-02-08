@@ -1,3 +1,4 @@
+from socket import socket
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 import logging
@@ -7,6 +8,7 @@ from app.api.scores import router as scores_router
 from app.api.games import router as games_router
 from app.init_db import init_db
 from app.config import settings
+import os, socket
 
 # Configure logging
 logging.basicConfig(
@@ -42,6 +44,24 @@ async def root():
 
 @app.get("/health")
 async def health():
-    import os, socket
-
     return {"hostname": socket.gethostname(), "pid": os.getpid()}
+
+
+@app.get("/api/debug/load-balancer")
+async def check_worker():
+    # ดึงค่ามาเก็บไว้ก่อนเพื่อใช้ทั้งใน print และ return
+    pid = os.getpid()
+    container = socket.gethostname()
+
+    # ส่วนที่เพิ่มเพื่อ Log ให้อ่านง่าย
+    print("\n" + "-" * 50)
+    print(f"  Request handled by Backend Node")
+    print(f"    • Container ID : {container}")
+    print(f"    • Worker PID   : {pid}")
+    print("-" * 50 + "\n")
+
+    return {
+        "message": "Hello from Backend!",
+        "worker_pid": pid,
+        "container_id": container,
+    }

@@ -27,6 +27,9 @@ const conf = {
 
     // ระบบโปรไฟล์ผู้ใช้
     userProfile: `${API}/api/auth/profile`,
+
+    // ระบบ Debug
+    debugLoadBalancer: `${API}/api/debug/load-balancer`,
 };
 
 export default conf;

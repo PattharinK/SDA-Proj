@@ -4,6 +4,7 @@ import { useAuth } from './services/useQuery';
 import { SearchProvider } from './contexts/SearchContext';
 
 // Pages
+import DebugBar from './components/DebugBar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
@@ -19,6 +20,8 @@ function App() {
 
   return (
     <SearchProvider>
+      <DebugBar />
+
       <Routes>
         {/* หน้าหลักคือ Home (ทุกคนเข้าได้ ทั้ง Guest และ User) */}
         <Route path="/" element={<Home />} />
