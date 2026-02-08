@@ -414,7 +414,7 @@ $("#replay").click(function () {
 });
 
 function playerScore() {
-   score += 1;
+   score += 100;
    //play score sound
    soundScore.stop();
    soundScore.play();

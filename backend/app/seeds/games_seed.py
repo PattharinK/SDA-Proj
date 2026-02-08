@@ -19,4 +19,9 @@ GAMES_SEED = [
         "description": "A fast paced hexagonal puzzle game inspired by Tetris",
         "thumbnail_url": "/static-games/hextris/favicon.ico",
     },
+    {
+        "title": "Sudoku",
+        "description": "Classic logic puzzle - fill the grid with numbers 1-9",
+        "thumbnail_url": "/static-games/sudoku/demo/assets/ico/favicon.ico",
+    },
 ]
