@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './services/useQuery';
+import { SearchProvider } from './contexts/SearchContext';
 
 // Pages
 import Login from './pages/Login';
@@ -17,18 +18,20 @@ function App() {
   }, [checkAuth]);
 
   return (
-    <Routes>
-      {/* หน้าหลักคือ Home (ทุกคนเข้าได้ ทั้ง Guest และ User) */}
-      <Route path="/" element={<Home />} />
-      <Route path="/games/:gameSlug" element={<Game />} />
+    <SearchProvider>
+      <Routes>
+        {/* หน้าหลักคือ Home (ทุกคนเข้าได้ ทั้ง Guest และ User) */}
+        <Route path="/" element={<Home />} />
+        <Route path="/games/:gameSlug" element={<Game />} />
 
-      {/* Login/Register สำหรับคนที่อยากสมัครสมาชิก */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/profile" element={<Profile />} />
+        {/* Login/Register สำหรับคนที่อยากสมัครสมาชิก */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </SearchProvider>
   );
 }
 
