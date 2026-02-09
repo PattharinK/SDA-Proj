@@ -12,7 +12,7 @@ GAMES_SEED = [
     {
         "title": "Slot Machine",
         "description": "Try your luck with the slot machine!",
-        "thumbnail_url": "/static-games/slot-machine/images/favicon.png",
+        "thumbnail_url": "/static-games/slot-machine/favicon.png",
     },
     {
         "title": "Hextris",
@@ -22,6 +22,6 @@ GAMES_SEED = [
     {
         "title": "Sudoku",
         "description": "Classic logic puzzle - fill the grid with numbers 1-9",
-        "thumbnail_url": "/static-games/sudoku/favicon.ico",
+        "thumbnail_url": "/static-games/sudoku/favicon.png",
     },
 ]
