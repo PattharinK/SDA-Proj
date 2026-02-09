@@ -1,12 +1,12 @@
 GAMES_SEED = [
     {
         "title": "2048",
-        "description": "Join the numbers and get to the 2048 tile!",
+        "description": "Join the numbers and get to the 2048 tile! Use your arrow keys to move the tiles. When two tiles with the same number touch, they merge into one!",
         "thumbnail_url": "/static-games/2048/meta/apple-touch-icon.png",
     },
     {
         "title": "Flappy",  # Keep original name "Flappy" not "Flappy Bird"
-        "description": "Navigate the bird through obstacles",
+        "description": "Navigate the bird through obstacles. Tap or click to flap and keep the bird flying. Avoid the pipes and see how far you can go!",
         "thumbnail_url": "/static-games/flappy/assets/favicon.png",
     },
     {
