@@ -30,14 +30,11 @@ export default function Leaderboard({ gameId }) {
         if (!token) return;
 
         try {
-            const apiUrl = new URL(conf.urlApi);
-            const wsProtocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl =
-                `${wsProtocol}//${apiUrl.host}` +
-                `/api/scores/ws/leaderboard/${gameId}` +
-                `?token=${encodeURIComponent(token)}`;
-
-            ws = new WebSocket(wsUrl);
+            const apiUrl = new URL(conf.urlApi); 
+	    const wsProtocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:'; const wsUrl = `${wsProtocol}//${apiUrl.host}` + 
+               `/api/scores/ws/leaderboard/${gameId}` + 
+               `?token=${encodeURIComponent(token)}`;
+	    ws = new WebSocket(wsUrl);
         } catch (e) {
             // WebSocket connection failed, using REST API only
             return () => { };
