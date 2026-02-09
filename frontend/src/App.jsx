@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './services/useQuery';
+import { SearchProvider } from './contexts/SearchContext';
 
 // Pages
+import DebugBar from './components/DebugBar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
@@ -17,18 +19,22 @@ function App() {
   }, [checkAuth]);
 
   return (
-    <Routes>
-      {/* หน้าหลักคือ Home (ทุกคนเข้าได้ ทั้ง Guest และ User) */}
-      <Route path="/" element={<Home />} />
-      <Route path="/games/:gameSlug" element={<Game />} />
+    <SearchProvider>
+      <DebugBar />
 
-      {/* Login/Register สำหรับคนที่อยากสมัครสมาชิก */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/profile" element={<Profile />} />
+      <Routes>
+        {/* หน้าหลักคือ Home (ทุกคนเข้าได้ ทั้ง Guest และ User) */}
+        <Route path="/" element={<Home />} />
+        <Route path="/games/:gameSlug" element={<Game />} />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Login/Register สำหรับคนที่อยากสมัครสมาชิก */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </SearchProvider>
   );
 }
 

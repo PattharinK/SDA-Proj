@@ -37,15 +37,11 @@ const useGamesStore = create((set) => ({
             const res = await ax.post(conf.playGame(id));
             const newPlayerCount = res.data.player_count;
 
-            // 1️ Update current game
+            // Update both game and games in a single atomic operation
             set((state) => ({
                 game: state.game?.id === id
                     ? { ...state.game, player_count: newPlayerCount }
                     : state.game,
-            }));
-
-
-            set((state) => ({
                 games: state.games.map((g) =>
                     Number(g.id) === Number(id)
                         ? { ...g, player_count: newPlayerCount }

@@ -1,8 +1,8 @@
 import api from "./ax";
 
 // API URL from environment variable (configurable per environment)
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
+// In production with Nginx proxy, use empty string to make relative requests to /api
+const API = import.meta.env.VITE_API_URL || window.location.origin;
 const conf = {
     urlApi: `${API}/api`,
 
@@ -21,6 +21,12 @@ const conf = {
     // ระบบ Scores
     submitScore: `${API}/api/scores/submit`,
     leaderboard: (gameId) => `${API}/api/scores/leaderboard/${gameId}`,
+
+    // ระบบโปรไฟล์ผู้ใช้
+    userProfile: `${API}/api/auth/profile`,
+
+    // ระบบ Debug
+    debugLoadBalancer: `${API}/api/debug/load-balancer`,
 };
 
 export default conf;

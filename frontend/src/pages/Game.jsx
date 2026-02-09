@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import Leaderboard from "../components/Leaderboard";
 import ResizableGameScreen from "../components/ResizableGameScreen";
 import { useAuth, useGames } from '../services/useQuery';
+import useGamesStore from '../stores/gamesStore';
+import { addRecentGame } from '../utils/recentGames';
 import Navbar from "../components/Navbar";
 
 function Game() {
@@ -13,18 +15,53 @@ function Game() {
     const lastPlayedGameId = useRef(null);
 
     useEffect(() => {
-        fetchGame(gameSlug).catch(() => navigate("/"));
-    }, [gameSlug, fetchGame, navigate]);
+        let isCancelled = false;
 
+        const loadAndPlayGame = async () => {
+            try {
+                // First, fetch the game data
+                await fetchGame(gameSlug);
 
-    useEffect(() => {
-        if (!game?.id || isGuest) return;
+                // Component might have unmounted or navigated away
+                if (isCancelled) return;
 
-        if (lastPlayedGameId.current === game.id) return;
+                // Get the freshly fetched game from store
+                const { game: currentGame } = useGamesStore.getState();
 
-        lastPlayedGameId.current = game.id;
-        playGame(game.id).catch(console.error);
-    }, [game?.id, isGuest, playGame]);
+                // Add to recently played (for all users, including guests)
+                if (currentGame) {
+                    addRecentGame({
+                        id: currentGame.id,
+                        title: currentGame.title,
+                        slug: gameSlug,
+                        thumbnail: currentGame.thumbnail || null
+                    });
+                }
+
+                // Safety checks
+                if (!currentGame || isGuest) return;
+
+                // Prevent calling playGame multiple times for the same game
+                if (lastPlayedGameId.current === currentGame.id) return;
+
+                // Mark as played and call the API
+                lastPlayedGameId.current = currentGame.id;
+                await playGame(currentGame.id);
+            } catch (error) {
+                // Only navigate if component is still mounted
+                if (!isCancelled) {
+                    navigate("/");
+                }
+            }
+        };
+
+        loadAndPlayGame();
+
+        // Cleanup function to prevent state updates after unmount
+        return () => {
+            isCancelled = true;
+        };
+    }, [gameSlug, fetchGame, navigate, isGuest, playGame]);
 
     if (loading) {
         return <p className="text-center mt-10">Loading...</p>;

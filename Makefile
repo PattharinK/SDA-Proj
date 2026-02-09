@@ -10,10 +10,16 @@ help:
 	@echo "SDA Game Platform - Quick Commands"
 	@echo "======================================"
 	@echo ""
-	@echo "⚡ Quick Start:"
+	@echo "⚡ Development:"
 	@echo "  make up              เปิด services ทั้งหมด (frontend, backend, mysql, redis)"
 	@echo "  make down            ปิด services ทั้งหมด"
 	@echo "  make seed            เพิ่มข้อมูลเกมลงฐานข้อมูล"
+	@echo ""
+	@echo "🚀 Production:"
+	@echo "  make prod-up         เปิด production services"
+	@echo "  make prod-down       ปิด production services"
+	@echo "  make prod-build      Build production images"
+	@echo "  make prod-logs       ดู production logs"
 	@echo ""
 	@echo "Debug & Logs:"
 	@echo "  make logs            ดู logs ของทั้งหมด"
@@ -32,10 +38,18 @@ help:
 	@echo "  make shell-backend   เข้า bash ของ backend"
 	@echo "  make shell-redis     เข้า redis-cli"
 	@echo ""
-	@echo "Workflow ทั่วไป:"
+	@echo "Development Workflow:"
 	@echo "  1. make up"
 	@echo "  2. make seed"
 	@echo "  3. ไปที่ http://localhost:5173"
+	@echo ""
+	@echo "Production Workflow:"
+	@echo "  1. cp .env.production.example .env.production"
+	@echo "  2. แก้ไข .env.production (ใส่ SECRET_KEY, passwords, domain)"
+	@echo "  3. cp .env.production .env"
+	@echo "  4. make prod-build"
+	@echo "  5. make prod-up"
+	@echo "  6. ดู DEPLOYMENT.md สำหรับรายละเอียดเพิ่มเติม"
 	@echo ""
 
 # ================================
@@ -64,7 +78,7 @@ restart-backend:
 # ================================
 
 seed:
-	docker-compose -f docker-compose.dev.yml run --rm sda_backend python -m app.seed
+	docker compose -f docker-compose.dev.yml run --rm sda_backend python -m app.seed
 	@echo "Database seeded!"
 
 clean:
@@ -131,4 +145,75 @@ rebuild-backend:
 
 rebuild-frontend:
 	docker-compose -f docker-compose.dev.yml up -d --no-deps --build sda_frontend
-	@echo "Frontend rebuilt"
+	@echo "Frontend rebuilt"# ================================
+# Production Commands
+# ================================
+
+.PHONY: prod-build prod-up prod-down prod-logs prod-restart prod-clean
+
+prod-build:
+	docker compose -f docker-compose.prod.yml build
+	@echo "Production images built successfully!"
+
+prod-up:
+	docker compose -f docker-compose.prod.yml up -d --scale backend=3
+	@echo "Production services started!"
+
+prod-down:
+	docker compose -f docker-compose.prod.yml down
+	@echo "Production services stopped"
+
+prod-logs:
+	docker-compose -f docker-compose.prod.yml logs -f --tail=50
+
+prod-restart:
+	docker-compose -f docker-compose.prod.yml restart
+	@echo "Production services restarted"
+
+prod-clean:
+	docker-compose -f docker-compose.prod.yml down -v --remove-orphans
+	@echo "Production containers and volumes removed!"
+
+prod-status:
+	@echo "🔍 Checking production services..."
+	@docker-compose -f docker-compose.prod.yml ps
+	@echo ""
+	@echo "Application: http://localhost"
+	@echo "Health Check: http://localhost/health"
+	@echo ""
+# ================================
+# Production Commands
+# ================================
+
+.PHONY: prod-build prod-up prod-down prod-logs prod-restart prod-clean
+
+prod-build:
+	docker compose -f docker-compose.prod.yml build
+	@echo "Production images built successfully!"
+
+prod-up:
+	docker compose -f docker-compose.prod.yml up -d --scale backend=3
+	@echo "Production services started!"
+	
+prod-down:
+	docker compose -f docker-compose.prod.yml down
+	@echo "Production services stopped"
+
+prod-logs:
+	docker compose -f docker-compose.prod.yml logs -f --tail=50
+
+prod-restart:
+	docker compose -f docker-compose.prod.yml restart
+	@echo "Production services restarted"
+
+prod-clean:
+	docker compose -f docker-compose.prod.yml down -v --remove-orphans
+	@echo "Production containers and volumes removed!"
+
+prod-status:
+	@echo "🔍 Checking production services..."
+	@docker-compose -f docker-compose.prod.yml ps
+	@echo ""
+	@echo "Application: http://localhost"
+	@echo "Health Check: http://localhost/health"
+	@echo ""

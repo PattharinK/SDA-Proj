@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, text
+from sqlalchemy import func, select, update, text
 from sqlalchemy.exc import IntegrityError
 
 from app.database import get_db
@@ -55,7 +55,11 @@ async def get_game(game_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.get("/by-title/{title}", response_model=GameResponse)
 async def get_game_by_title(title: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Game).where(Game.title == title.replace("-", " ")))
+    # Make search case-insensitive and handle URL format (hyphens to spaces)
+    search_title = title.replace("-", " ").lower()
+    result = await db.execute(
+        select(Game).where(func.lower(Game.title) == search_title)
+    )
     game = result.scalar_one_or_none()
 
     if not game:

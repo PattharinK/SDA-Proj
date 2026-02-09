@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sudoku</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="label">Time:</span>
+                    <span id="timer" class="value">00:00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Best Time:</span>
+                    <span id="best-time" class="value">--:--</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="difficulty-buttons">
+                <button class="diff-btn active" data-difficulty="easy">Easy</button>
+                <button class="diff-btn" data-difficulty="medium">Medium</button>
+                <button class="diff-btn" data-difficulty="hard">Hard</button>
+            </div>
+            <button id="new-game-btn" class="action-btn primary">New Game</button>
+        </div>
+
+        <div id="sudoku-board" class="sudoku-grid"></div>
+
+        <div class="game-controls">
+            <button id="check-btn" class="action-btn">Check Solution</button>
+            <button id="hint-btn" class="action-btn">Get Hint</button>
+        </div>
+
+        <div id="message" class="message hidden"></div>
+    </div>
+
+    <script src="sudoku.js"></script>
+    <script src="../game-sdk.js"></script>
+    <script>
+        let puzzle = '';
+        let solution = '';
+        let startTime = null;
+        let timerInterval = null;
+        let currentDifficulty = 'easy';
+        let gameCompleted = false;
+        let bestScore = 0;
+
+        const MAX_TIME = 3600; // 60 minutes in seconds
+
+        // Wait for SDK to be ready
+        window.addEventListener('GameSDK_Ready', async (e) => {
+            // console.log('GameSDK Ready:', e.detail);
+            await loadBestScore();
+        });
+
+        async function loadBestScore() {
+            if (window.GameSDK && window.GameSDK.isReady()) {
+                bestScore = await window.GameSDK.loadBestScore();
+                updateBestTimeDisplay();
+            }
+        }
+
+        function updateBestTimeDisplay() {
+            const bestTimeEl = document.getElementById('best-time');
+            if (bestScore > 0) {
+                const bestTime = MAX_TIME - bestScore;
+                bestTimeEl.textContent = formatTime(bestTime);
+            } else {
+                bestTimeEl.textContent = '--:--';
+            }
+        }
+
+        function initializeBoard() {
+            const board = document.getElementById('sudoku-board');
+            board.innerHTML = '';
+
+            for (let i = 0; i < 81; i++) {
+                const cell = document.createElement('input');
+                cell.type = 'text';
+                cell.maxLength = 1;
+                cell.className = 'cell';
+                cell.dataset.index = i;
+
+                // Add border classes for 3x3 boxes
+                const row = Math.floor(i / 9);
+                const col = i % 9;
+                if ((col + 1) % 3 === 0 && col !== 8) cell.classList.add('border-right');
+                if ((row + 1) % 3 === 0 && row !== 8) cell.classList.add('border-bottom');
+
+                cell.addEventListener('input', handleCellInput);
+                cell.addEventListener('keydown', handleKeyDown);
+
+                board.appendChild(cell);
+            }
+        }
+
+        function handleCellInput(e) {
+            const value = e.target.value;
+            if (value && !/^[1-9]$/.test(value)) {
+                e.target.value = '';
+                return;
+            }
+            e.target.classList.remove('error');
+        }
+
+        function handleKeyDown(e) {
+            const currentIndex = parseInt(e.target.dataset.index);
+            let newIndex = currentIndex;
+
+            switch (e.key) {
+                case 'ArrowUp':
+                    newIndex = currentIndex - 9;
+                    break;
+                case 'ArrowDown':
+                    newIndex = currentIndex + 9;
+                    break;
+                case 'ArrowLeft':
+                    newIndex = currentIndex - 1;
+                    break;
+                case 'ArrowRight':
+                    newIndex = currentIndex + 1;
+                    break;
+                default:
+                    return;
+            }
+
+            if (newIndex >= 0 && newIndex < 81) {
+                e.preventDefault();
+                const cells = document.querySelectorAll('.cell');
+                cells[newIndex].focus();
+            }
+        }
+
+        function generateNewPuzzle() {
+            gameCompleted = false;
+            puzzle = sudoku.generate(currentDifficulty);
+            solution = sudoku.solve(puzzle);
+
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                const value = puzzle[index];
+                if (value !== '.') {
+                    cell.value = value;
+                    cell.disabled = true;
+                    cell.classList.add('given');
+                    cell.classList.remove('error', 'user-input');
+                } else {
+                    cell.value = '';
+                    cell.disabled = false;
+                    cell.classList.remove('given', 'error', 'user-input');
+                    cell.classList.add('user-input');
+                }
+            });
+
+            startTimer();
+            hideMessage();
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById('timer').textContent = formatTime(elapsed);
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function getCurrentBoard() {
+            const cells = document.querySelectorAll('.cell');
+            let board = '';
+            cells.forEach(cell => {
+                board += cell.value || '.';
+            });
+            return board;
+        }
+
+        function checkSolution() {
+            const currentBoard = getCurrentBoard();
+            const cells = document.querySelectorAll('.cell');
+            let allFilled = true;
+            let hasErrors = false;
+
+            cells.forEach((cell, index) => {
+                if (!cell.disabled) {
+                    if (cell.value === '') {
+                        allFilled = false;
+                    } else if (cell.value !== solution[index]) {
+                        cell.classList.add('error');
+                        hasErrors = true;
+                    } else {
+                        cell.classList.remove('error');
+                    }
+                }
+            });
+
+            if (!allFilled) {
+                showMessage('Please fill all cells before checking!', 'warning');
+                return;
+            }
+
+            if (hasErrors) {
+                showMessage('Some cells are incorrect. Try again!', 'error');
+                return;
+            }
+
+            // Puzzle solved!
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            stopTimer();
+            gameCompleted = true;
+
+            // Calculate score: MAX_TIME - time_taken
+            const score = Math.max(0, MAX_TIME - elapsed);
+
+            showMessage(`🎉 Congratulations! You solved it in ${formatTime(elapsed)}!`, 'success');
+
+            // Submit score to backend
+            if (window.GameSDK && window.GameSDK.isReady()) {
+                window.GameSDK.submitScore(score);
+                // console.log('Score submitted:', score, 'Time:', elapsed);
+            }
+
+            // Disable all cells
+            cells.forEach(cell => cell.disabled = true);
+        }
+
+        function getHint() {
+            if (gameCompleted) return;
+
+            const cells = document.querySelectorAll('.cell');
+            const emptyCells = Array.from(cells).filter(cell => !cell.disabled && cell.value === '');
+
+            if (emptyCells.length === 0) {
+                showMessage('No empty cells to fill!', 'info');
+                return;
+            }
+
+            const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            const index = parseInt(randomCell.dataset.index);
+            randomCell.value = solution[index];
+            randomCell.classList.add('hint');
+            randomCell.disabled = true;
+
+            showMessage('Hint added! Note: Using hints disables score submission for this game.', 'info');
+
+            // Disable score submission for this game
+            gameCompleted = true;
+        }
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.classList.remove('hidden');
+        }
+
+        function hideMessage() {
+            const messageEl = document.getElementById('message');
+            messageEl.classList.add('hidden');
+        }
+
+        // Event Listeners
+        document.getElementById('new-game-btn').addEventListener('click', generateNewPuzzle);
+        document.getElementById('check-btn').addEventListener('click', checkSolution);
+        document.getElementById('hint-btn').addEventListener('click', getHint);
+
+        document.querySelectorAll('.diff-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentDifficulty = e.target.dataset.difficulty;
+            });
+        });
+
+        // Initialize
+        initializeBoard();
+        generateNewPuzzle();
+
+        // Load best score when ready
+        if (window.GameSDK && window.GameSDK.isReady()) {
+            loadBestScore();
+        }
+    </script>
+</body>
+
+</html>

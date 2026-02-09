@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_db
-from app.models import User
+from app.models import User, Game, Leaderboard
 from app.schemas import UserCreate, UserResponse, TokenResponse, LoginRequest
 from app.auth import (
     get_password_hash,
@@ -68,3 +68,42 @@ async def get_me(current_user: User = Depends(get_current_user)):
 @router.post("/logout")
 async def logout():
     return {"message": "Logged out successfully"}
+
+
+@router.get("/profile")
+async def get_profile(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Get user profile with all game scores
+    Returns: user info, created_at, and list of games played with scores
+    """
+    # Get all leaderboard entries for this user with game info
+    result = await db.execute(
+        select(
+            Leaderboard.best_score,
+            Game.id,
+            Game.title,
+            Game.thumbnail_url,
+        )
+        .join(Game, Game.id == Leaderboard.game_id)
+        .where(Leaderboard.user_id == current_user.id)
+        .order_by(Leaderboard.best_score.desc())
+    )
+    
+    games = []
+    for row in result.all():
+        m = row._mapping
+        games.append({
+            "game_id": m[Game.id],
+            "game_title": m[Game.title],
+            "best_score": m[Leaderboard.best_score],
+            "thumbnail_url": m[Game.thumbnail_url],
+        })
+    
+    return {
+        "username": current_user.username,
+        "created_at": current_user.created_at.isoformat(),
+        "games": games,
+    }

@@ -2,9 +2,12 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../services/useQuery';
 import { SPACING, FONT_SIZE, COLORS } from '../styles/tokens';
 import ThemeToggle from './ThemeToggle/ThemeToggle.jsx';
+import SearchBar from './SearchBar';
+import { useSearch } from '../contexts/SearchContext';
 
 const Navbar = () => {
     const { user, isGuest, logout } = useAuth();
+    const { searchQuery, setSearchQuery } = useSearch();
 
     return (
         <nav style={{
@@ -22,6 +25,22 @@ const Navbar = () => {
                     <i className="nes-icon coin is-medium"></i> PSU888
                 </h1>
             </Link>
+
+            {/* Search Bar */}
+            <div style={{
+                flex: 1,
+                maxWidth: '700px',
+                margin: `0 ${SPACING.lg}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                <SearchBar
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search games..."
+                />
+            </div>
 
             {/* User Info & Actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.md, flexWrap: 'wrap' }}>
@@ -52,7 +71,7 @@ const Navbar = () => {
                     </div>
                 )}
                 {/* Theme Toggle */}
-                <div style={{ display: 'flex', gap: SPACING.sm, flexWrap: 'wrap'}}>
+                <div style={{ display: 'flex', gap: SPACING.sm, flexWrap: 'wrap' }}>
                     <ThemeToggle />
                 </div>
             </div>

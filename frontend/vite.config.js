@@ -11,4 +11,16 @@ export default defineConfig({
       interval: 100,
     },
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['lucide-react', 'clsx', 'tailwind-merge'],
+        },
+      },
+    },
+  },
 })

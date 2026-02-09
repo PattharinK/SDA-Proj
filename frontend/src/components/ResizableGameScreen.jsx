@@ -166,7 +166,7 @@ function ResizableGameScreen({ gameSlug, gameTitle, gameId, token, isGuest }) {
                 {/* Game Iframe */}
                 <iframe
                     ref={iframeRef}
-                    src={`/games/${gameSlug}/index.html`}
+                    src={`/static-games/${gameSlug}/index.html`}
                     title={gameTitle}
                     style={{
                         height: "100%",
