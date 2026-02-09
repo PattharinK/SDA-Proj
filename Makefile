@@ -182,4 +182,5 @@ prod-status:
 	@echo ""
 	@echo "Application: http://localhost"
 	@echo "Health Check: http://localhost/health"
-	@echo ""
+	@echo ""	
+# End of Makefile
