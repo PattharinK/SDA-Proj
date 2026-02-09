@@ -11,32 +11,32 @@ help:
 	@echo "======================================"
 	@echo ""
 	@echo "⚡ Development:"
-	@echo "  make up              เปิด services ทั้งหมด (frontend, backend, mysql, redis)"
-	@echo "  make down            ปิด services ทั้งหมด"
-	@echo "  make seed            เพิ่มข้อมูลเกมลงฐานข้อมูล"
+	@echo "  make up             เปิด services ทั้งหมด (frontend, backend, mysql, redis)"
+	@echo "  make down           ปิด services ทั้งหมด"
+	@echo "  make seed           เพิ่มข้อมูลเกมลงฐานข้อมูล"
 	@echo ""
 	@echo "🚀 Production:"
-	@echo "  make prod-up         เปิด production services"
-	@echo "  make prod-down       ปิด production services"
-	@echo "  make prod-build      Build production images"
-	@echo "  make prod-logs       ดู production logs"
+	@echo "  make prod-up        เปิด production services"
+	@echo "  make prod-down      ปิด production services"
+	@echo "  make prod-build     Build production images"
+	@echo "  make prod-logs      ดู production logs"
 	@echo ""
 	@echo "Debug & Logs:"
-	@echo "  make logs            ดู logs ของทั้งหมด"
-	@echo "  make logs-backend    ดู logs backend เท่านั้น"
-	@echo "  make logs-redis      ดู logs redis"
-	@echo "  make ps              ดู status ของ containers"
+	@echo "  make logs           ดู logs ของทั้งหมด"
+	@echo "  make logs-backend   ดู logs backend เท่านั้น"
+	@echo "  make logs-redis     ดู logs redis"
+	@echo "  make ps             ดู status ของ containers"
 	@echo ""
 	@echo "Restart:"
-	@echo "  make restart         restart ทั้งหมด"
+	@echo "  make restart        restart ทั้งหมด"
 	@echo "  make restart-backend restart backend เท่านั้น"
 	@echo ""
 	@echo "Cleanup:"
-	@echo "  make clean           ลบ containers + volumes (⚠️ ตัดข้อมูล)"
+	@echo "  make clean          ลบ containers + volumes (⚠️ ตัดข้อมูล)"
 	@echo ""
 	@echo "Debug Shell:"
-	@echo "  make shell-backend   เข้า bash ของ backend"
-	@echo "  make shell-redis     เข้า redis-cli"
+	@echo "  make shell-backend  เข้า bash ของ backend"
+	@echo "  make shell-redis    เข้า redis-cli"
 	@echo ""
 	@echo "Development Workflow:"
 	@echo "  1. make up"
@@ -145,42 +145,8 @@ rebuild-backend:
 
 rebuild-frontend:
 	docker-compose -f docker-compose.dev.yml up -d --no-deps --build sda_frontend
-	@echo "Frontend rebuilt"# ================================
-# Production Commands
-# ================================
+	@echo "Frontend rebuilt"
 
-.PHONY: prod-build prod-up prod-down prod-logs prod-restart prod-clean
-
-prod-build:
-	docker compose -f docker-compose.prod.yml build
-	@echo "Production images built successfully!"
-
-prod-up:
-	docker compose -f docker-compose.prod.yml up -d --scale backend=3
-	@echo "Production services started!"
-
-prod-down:
-	docker compose -f docker-compose.prod.yml down
-	@echo "Production services stopped"
-
-prod-logs:
-	docker-compose -f docker-compose.prod.yml logs -f --tail=50
-
-prod-restart:
-	docker-compose -f docker-compose.prod.yml restart
-	@echo "Production services restarted"
-
-prod-clean:
-	docker-compose -f docker-compose.prod.yml down -v --remove-orphans
-	@echo "Production containers and volumes removed!"
-
-prod-status:
-	@echo "🔍 Checking production services..."
-	@docker-compose -f docker-compose.prod.yml ps
-	@echo ""
-	@echo "Application: http://localhost"
-	@echo "Health Check: http://localhost/health"
-	@echo ""
 # ================================
 # Production Commands
 # ================================
@@ -194,7 +160,7 @@ prod-build:
 prod-up:
 	docker compose -f docker-compose.prod.yml up -d --scale backend=3
 	@echo "Production services started!"
-	
+
 prod-down:
 	docker compose -f docker-compose.prod.yml down
 	@echo "Production services stopped"
