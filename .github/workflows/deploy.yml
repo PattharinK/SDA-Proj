@@ -48,12 +48,15 @@ jobs:
             # 3. ดึงโค้ดล่าสุด (ใช้ sudo เพราะไฟล์เป็นของ singowen5 แต่เรา login เป็น Service Account)
             echo 'PULLING NEW CODE...'
             sudo git pull origin main
+
+            sudo usermod -aG docker $USER
+            newgrp docker
             
             # 4. สั่งรัน Docker Compose (Build ใหม่และรัน)
             echo 'REBUILDING CONTAINER...'
-            sudo docker compose -f docker-compose.prod.yml build
-            sudo docker compose -f docker-compose.prod.yml up -d --scale backend=3
-            make seed
+            sudo make prod-build
+            sudo make prod-up
+            sudo make seed
             
             # 5. ลบ Image เก่าๆ ที่ไม่ใช้แล้ว (กันพื้นที่เต็ม)
             sudo docker image prune -f
