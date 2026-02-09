@@ -1,0 +1,58 @@
+name: Deploy to VM
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  PROJECT_ID: "lab-sda-478603"
+  ZONE: "asia-southeast1-a"
+  INSTANCE_NAME: "sda-psu888"
+  PROJECT_PATH: "/home/singowen5/SDA-Proj" # Path ที่คุณหามา
+
+jobs:
+  deploy-to-vm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Login เข้า GCP
+      - name: Google Auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      # ตั้งค่า gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      # SSH เข้าไปสั่งงาน
+      - name: SSH and Deploy
+        run: |
+          gcloud compute ssh ${{ env.INSTANCE_NAME }} --zone=${{ env.ZONE }} --tunnel-through-iap --command="
+            
+            # 1. เข้าไปที่โฟลเดอร์โปรเจกต์
+            cd ${{ env.PROJECT_PATH }}
+            
+            # 2. ตั้งค่า Safe Directory (กัน Error เรื่องสิทธิ์)
+            sudo git config --global --add safe.directory ${{ env.PROJECT_PATH }}
+
+            # 3. ดึงโค้ดล่าสุด (ใช้ sudo เพราะไฟล์เป็นของ singowen5 แต่เรา login เป็น Service Account)
+            echo 'PULLING NEW CODE...'
+            sudo git pull origin main
+            
+            # 4. สั่งรัน Docker Compose (Build ใหม่และรัน)
+            echo 'REBUILDING CONTAINER...'
+            sudo docker compose up -d --build
+            
+            # 5. ลบ Image เก่าๆ ที่ไม่ใช้แล้ว (กันพื้นที่เต็ม)
+            sudo docker image prune -f
+            
+            echo '✅ DEPLOYMENT SUCCESS!'
+          "
